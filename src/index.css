@@ -4,10 +4,11 @@
   /* ==========================================================================
      Pitch-Black & Dark-Charcoal Luxury Theme (Adopted from Lab Project)
      Aesthetic: True Pitch-Black (#000000), Charcoal & Graphite, Silver Metallic
-     Refined Organic Radii: Smooth curves (12px, 16px, 20px, 24px) - Zero Boxy Edges
+     Refined Organic Radii: Smooth curves (12px, 16px, 20px, 24px)
+     Full Mobile & Responsive Architecture (<768px, <480px)
      ========================================================================== */
 
-  /* --- Canvas & Surfaces (True Pitch Black & Charcoal) --- */
+  /* --- Canvas & Surfaces --- */
   --bg-primary: #000000;
   --bg-secondary: #08080a;
   --bg-tertiary: #0e0e12;
@@ -18,7 +19,7 @@
   --bg-input: #09090c;
   --bg-panel: #0b0b0e;
 
-  /* --- Borders (Sub-pixel & Metallic Silver) --- */
+  /* --- Borders --- */
   --border: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.18);
   --border-metallic: rgba(255, 255, 255, 0.22);
@@ -56,7 +57,7 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 
-  /* --- Refined Organic Radii (Smooth, Curvature, Zero Boxy / Sharp Corners) --- */
+  /* --- Refined Organic Radii --- */
   --radius-xs: 8px;
   --radius-sm: 12px;
   --radius-md: 16px;
@@ -74,6 +75,7 @@
 html, body {
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
@@ -86,27 +88,25 @@ html, body {
 
 /* Minimalist Dark Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-xs);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* Text selections */
 ::selection {
   background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
 }
 
-/* Button & Form Defaults */
 button {
   font-family: inherit;
   cursor: pointer;
@@ -114,15 +114,23 @@ button {
   background: none;
   color: inherit;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 input, select, textarea {
   font-family: inherit;
   color: inherit;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* --- Metallic Silver Text Gradient --- */
+/* iOS Safari auto-zoom prevention: inputs must be 16px on mobile */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
 .text-gradient-silver {
   background: var(--grad-text-silver);
   -webkit-background-clip: text;
@@ -132,7 +140,6 @@ input, select, textarea {
   display: inline-block;
 }
 
-/* --- Refined Dark Glass Cards (Smooth 20px Curvature) --- */
 .card-glass {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
@@ -150,7 +157,12 @@ input, select, textarea {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
-/* --- Organic Status Wafers (No Pills, No Sharp Boxes) --- */
+@media (max-width: 768px) {
+  .card-glass:hover {
+    transform: none; /* Disable hover lifts on touch devices */
+  }
+}
+
 .tag-wafer {
   display: inline-flex;
   align-items: center;
@@ -166,6 +178,7 @@ input, select, textarea {
   color: var(--text-primary);
   letter-spacing: -0.01em;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .tag-wafer:hover {
@@ -173,7 +186,6 @@ input, select, textarea {
   border-color: var(--border-hover);
 }
 
-/* Flat Crisp Status Dot */
 .status-dot {
   width: 6px;
   height: 6px;
@@ -192,4 +204,24 @@ input, select, textarea {
 }
 .status-dot.gray {
   background-color: var(--text-muted);
+}
+
+/* Touch-friendly momentum scrolling */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+/* Responsive visibility helpers */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-on-mobile {
+    display: none !important;
+  }
 }

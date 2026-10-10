@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import type { DatabaseTable } from '../data/databaseData';
 import { X, Check, AlertCircle, PlusCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const RecordModal: React.FC<Props> = ({
   allTablesData,
   onInsertRow,
 }) => {
+  const isMobile = useIsMobile(640);
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
     table.columns.forEach((col) => {
@@ -111,7 +113,7 @@ export const RecordModal: React.FC<Props> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20
+        padding: isMobile ? 10 : 20
       }}
       onClick={onClose}
     >
@@ -124,10 +126,10 @@ export const RecordModal: React.FC<Props> = ({
         style={{
           width: '100%',
           maxWidth: 580,
-          maxHeight: '90vh',
+          maxHeight: isMobile ? '94vh' : '90vh',
           backgroundColor: '#08080a',
           border: '1px solid var(--border-metallic)',
-          borderRadius: 'var(--radius-xl)',
+          borderRadius: isMobile ? 'var(--radius-lg)' : 'var(--radius-xl)',
           boxShadow: 'var(--shadow-lg)',
           display: 'flex',
           flexDirection: 'column',
@@ -137,7 +139,7 @@ export const RecordModal: React.FC<Props> = ({
         {/* Modal Header */}
         <div
           style={{
-            padding: '18px 24px',
+            padding: isMobile ? '14px 16px' : '18px 24px',
             borderBottom: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
@@ -151,7 +153,7 @@ export const RecordModal: React.FC<Props> = ({
               <h3
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: 16,
+                  fontSize: isMobile ? 15 : 16,
                   fontWeight: 700,
                   color: '#ffffff'
                 }}
@@ -159,7 +161,7 @@ export const RecordModal: React.FC<Props> = ({
                 Insert Record: {table.name}
               </h3>
             </div>
-            <p style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 2 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
               Add a verified row conforming to the DuckDB columnar schema
             </p>
           </div>
@@ -169,7 +171,7 @@ export const RecordModal: React.FC<Props> = ({
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: '22px 24px' }}>
+        <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px 16px' : '22px 24px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
             {table.columns.map((col) => {
               const error = errors[col.name];
@@ -277,12 +279,13 @@ export const RecordModal: React.FC<Props> = ({
           {/* Footer buttons */}
           <div
             style={{
-              marginTop: 26,
-              paddingTop: 18,
+              marginTop: 22,
+              paddingTop: 16,
               borderTop: '1px solid var(--border)',
               display: 'flex',
               justifyContent: 'flex-end',
-              gap: 12
+              gap: 10,
+              width: '100%'
             }}
           >
             <button
@@ -295,7 +298,9 @@ export const RecordModal: React.FC<Props> = ({
                 border: '1px solid var(--border)',
                 color: 'var(--text-secondary)',
                 fontSize: 12.5,
-                fontWeight: 500
+                fontWeight: 500,
+                flex: isMobile ? 1 : 'none',
+                textAlign: 'center'
               }}
             >
               Cancel
@@ -312,7 +317,9 @@ export const RecordModal: React.FC<Props> = ({
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 6,
+                flex: isMobile ? 1 : 'none',
                 boxShadow: '0 2px 10px rgba(255, 255, 255, 0.15)'
               }}
             >

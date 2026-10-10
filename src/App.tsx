@@ -6,8 +6,10 @@ import { DashboardOverview } from './components/DashboardOverview';
 import { QueryConsole } from './components/QueryConsole';
 import { RecordModal } from './components/RecordModal';
 import { INITIAL_TABLES, INITIAL_RELATIONS } from './data/databaseData';
+import { useIsMobile } from './hooks/useMediaQuery';
 
 export const App: React.FC = () => {
+  const isMobile = useIsMobile(768);
   const [activeTab, setActiveTab] = useState<ActiveTab>('schema');
   const [selectedTableId, setSelectedTableId] = useState<string>(INITIAL_TABLES[0].id);
 
@@ -125,7 +127,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Tab Content */}
-      <main style={{ flex: 1, position: 'relative' }}>
+      <main style={{ flex: 1, position: 'relative', paddingBottom: isMobile ? 56 : 0 }}>
         {activeTab === 'schema' && (
           <DatabaseSchemaCanvas
             tables={INITIAL_TABLES}

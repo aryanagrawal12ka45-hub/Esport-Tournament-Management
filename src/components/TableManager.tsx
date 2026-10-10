@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Database
 } from 'lucide-react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface Props {
   tables: DatabaseTable[];
@@ -30,6 +31,7 @@ export const TableManager: React.FC<Props> = ({
   onOpenInsertModal,
   onDeleteRow,
 }) => {
+  const isMobile = useIsMobile(900);
   const currentTable = tables.find((t) => t.id === selectedTableId) || tables[0];
   const rows = tableData[currentTable.id] || [];
 
@@ -131,117 +133,167 @@ export const TableManager: React.FC<Props> = ({
     <div
       style={{
         display: 'flex',
-        height: 'calc(100vh - 60px)',
+        height: isMobile ? 'calc(100vh - 54px - 56px)' : 'calc(100vh - 60px)',
         backgroundColor: '#000000',
         overflow: 'hidden'
       }}
     >
-      {/* Left Sidebar: 15 Tables Selector */}
-      <div
-        style={{
-          width: 310,
-          borderRight: '1px solid var(--border)',
-          backgroundColor: '#08080a',
-          display: 'flex',
-          flexDirection: 'column',
-          flexShrink: 0
-        }}
-      >
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 11.5, fontWeight: 600 }}>
-            <Database size={13} style={{ color: 'var(--accent-silver)' }} />
-            Relational Schema Tables ({tables.length})
+      {/* Left Sidebar: 15 Tables Selector (Desktop only) */}
+      {!isMobile && (
+        <div
+          style={{
+            width: 310,
+            borderRight: '1px solid var(--border)',
+            backgroundColor: '#08080a',
+            display: 'flex',
+            flexDirection: 'column',
+            flexShrink: 0
+          }}
+        >
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 11.5, fontWeight: 600 }}>
+              <Database size={13} style={{ color: 'var(--accent-silver)' }} />
+              Relational Schema Tables ({tables.length})
+            </div>
           </div>
-        </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '10px 8px' }}>
-          {tables.map((table) => {
-            const isSelected = table.id === currentTable.id;
-            const rowCount = (tableData[table.id] || []).length;
+          <div style={{ flex: 1, overflowY: 'auto', padding: '10px 8px' }}>
+            {tables.map((table) => {
+              const isSelected = table.id === currentTable.id;
+              const rowCount = (tableData[table.id] || []).length;
 
-            return (
-              <button
-                key={table.id}
-                onClick={() => {
-                  onSelectTable(table.id);
-                  setCurrentPage(1);
-                  setSearchTerm('');
-                  setFilterColumn('all');
-                  setFilterValue('');
-                }}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 12px',
-                  borderRadius: 'var(--radius-sm)',
-                  marginBottom: 3,
-                  backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
-                  border: isSelected ? '1px solid var(--border-metallic)' : '1px solid transparent',
-                  color: isSelected ? '#ffffff' : 'var(--text-secondary)',
-                  fontSize: 12,
-                  fontWeight: isSelected ? 600 : 400,
-                  transition: 'all 0.15s ease',
-                  textAlign: 'left'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, flex: 1 }}>
-                  <span
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: '50%',
-                      backgroundColor: isSelected ? '#ffffff' : 'var(--text-dim)',
-                      flexShrink: 0
-                    }}
-                  />
-                  <span
-                    title={table.name}
-                    style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      minWidth: 0,
-                      flex: 1
-                    }}
-                  >
-                    {table.name}
-                  </span>
-                </div>
-
-                <span
+              return (
+                <button
+                  key={table.id}
+                  onClick={() => {
+                    onSelectTable(table.id);
+                    setCurrentPage(1);
+                    setSearchTerm('');
+                    setFilterColumn('all');
+                    setFilterValue('');
+                  }}
                   style={{
-                    fontSize: 10.5,
-                    fontFamily: 'var(--font-mono)',
-                    color: 'var(--text-muted)',
-                    padding: '2px 6px',
-                    borderRadius: 'var(--radius-xs)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid var(--border)',
-                    flexShrink: 0,
-                    marginLeft: 6
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    borderRadius: 'var(--radius-sm)',
+                    marginBottom: 3,
+                    backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                    border: isSelected ? '1px solid var(--border-metallic)' : '1px solid transparent',
+                    color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                    fontSize: 12,
+                    fontWeight: isSelected ? 600 : 400,
+                    transition: 'all 0.15s ease',
+                    textAlign: 'left'
                   }}
                 >
-                  {rowCount}
-                </span>
-              </button>
-            );
-          })}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, flex: 1 }}>
+                    <span
+                      style={{
+                        width: 5,
+                        height: 5,
+                        borderRadius: '50%',
+                        backgroundColor: isSelected ? '#ffffff' : 'var(--text-dim)',
+                        flexShrink: 0
+                      }}
+                    />
+                    <span
+                      title={table.name}
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        minWidth: 0,
+                        flex: 1
+                      }}
+                    >
+                      {table.name}
+                    </span>
+                  </div>
+
+                  <span
+                    style={{
+                      fontSize: 10.5,
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--text-muted)',
+                      padding: '2px 6px',
+                      borderRadius: 'var(--radius-xs)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                      border: '1px solid var(--border)',
+                      flexShrink: 0,
+                      marginLeft: 6
+                    }}
+                  >
+                    {rowCount}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content: Table Explorer & CRUD Operations */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Mobile-Only Active Table Selector Dropdown */}
+        {isMobile && (
+          <div
+            style={{
+              padding: '10px 16px',
+              borderBottom: '1px solid var(--border)',
+              backgroundColor: '#08080a',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-muted)', fontSize: 11.5, whiteSpace: 'nowrap' }}>
+              <Database size={13} style={{ color: 'var(--accent-silver)' }} />
+              Active Table:
+            </div>
+            <select
+              value={currentTable.id}
+              onChange={(e) => {
+                onSelectTable(e.target.value);
+                setCurrentPage(1);
+                setSearchTerm('');
+                setFilterColumn('all');
+                setFilterValue('');
+              }}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid var(--border-metallic)',
+                color: '#ffffff',
+                fontSize: 12.5,
+                fontWeight: 600,
+                outline: 'none'
+              }}
+            >
+              {tables.map((t) => (
+                <option key={t.id} value={t.id} style={{ background: '#08080a', color: '#ffffff' }}>
+                  {t.name} ({(tableData[t.id] || []).length} rows)
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Table Header Bar */}
         <div
           style={{
-            padding: '16px 24px',
+            padding: isMobile ? '12px 16px' : '16px 24px',
             borderBottom: '1px solid var(--border)',
             backgroundColor: '#08080a',
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'stretch' : 'center',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            gap: 12
           }}
         >
           <div>
@@ -249,7 +301,7 @@ export const TableManager: React.FC<Props> = ({
               <h2
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: 16,
+                  fontSize: isMobile ? 15 : 16,
                   fontWeight: 700,
                   color: '#ffffff',
                   letterSpacing: '-0.01em'
@@ -267,18 +319,19 @@ export const TableManager: React.FC<Props> = ({
                 {currentTable.category} Domain
               </span>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
+            <p style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 2 }}>
               {currentTable.description}
             </p>
           </div>
 
           {/* Action Buttons - Smooth Organic Radii */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
             <button
               onClick={handleExportCSV}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 7,
                 padding: '8px 14px',
                 borderRadius: 'var(--radius-sm)',
@@ -287,6 +340,7 @@ export const TableManager: React.FC<Props> = ({
                 color: 'var(--text-primary)',
                 fontSize: 12,
                 fontWeight: 500,
+                flex: isMobile ? 1 : 'none',
                 transition: 'all 0.2s ease'
               }}
             >
@@ -299,6 +353,7 @@ export const TableManager: React.FC<Props> = ({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 7,
                 padding: '8px 16px',
                 borderRadius: 'var(--radius-sm)',
@@ -307,6 +362,7 @@ export const TableManager: React.FC<Props> = ({
                 color: '#000000',
                 fontSize: 12,
                 fontWeight: 600,
+                flex: isMobile ? 1 : 'none',
                 boxShadow: '0 2px 10px rgba(255, 255, 255, 0.15)',
                 transition: 'all 0.2s ease'
               }}
@@ -320,13 +376,14 @@ export const TableManager: React.FC<Props> = ({
         {/* Search & Filter Toolbar */}
         <div
           style={{
-            padding: '12px 24px',
+            padding: isMobile ? '10px 16px' : '12px 24px',
             borderBottom: '1px solid var(--border)',
             backgroundColor: 'rgba(255, 255, 255, 0.01)',
             display: 'flex',
-            alignItems: 'center',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'stretch' : 'center',
             justifyContent: 'space-between',
-            gap: 16
+            gap: 10
           }}
         >
           {/* Global Fuzzy Search */}
@@ -339,7 +396,7 @@ export const TableManager: React.FC<Props> = ({
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'rgba(255, 255, 255, 0.025)',
               border: '1px solid var(--border)',
-              width: 300
+              width: isMobile ? '100%' : 300
             }}
           >
             <Search size={13} style={{ color: 'var(--text-muted)' }} />
@@ -363,8 +420,8 @@ export const TableManager: React.FC<Props> = ({
           </div>
 
           {/* Column-Specific Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 11.5, color: 'var(--text-muted)' }}>Filter by:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: isMobile ? '100%' : 'auto' }}>
+            <span style={{ fontSize: 11.5, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Filter:</span>
             <select
               value={filterColumn}
               onChange={(e) => {
@@ -373,6 +430,7 @@ export const TableManager: React.FC<Props> = ({
                 setCurrentPage(1);
               }}
               style={{
+                flex: isMobile ? 1 : 'none',
                 padding: '6px 12px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'rgba(255, 255, 255, 0.025)',
@@ -392,20 +450,21 @@ export const TableManager: React.FC<Props> = ({
             {filterColumn !== 'all' && (
               <input
                 type="text"
-                placeholder={`Value for ${filterColumn}...`}
+                placeholder={`Value...`}
                 value={filterValue}
                 onChange={(e) => {
                   setFilterValue(e.target.value);
                   setCurrentPage(1);
                 }}
                 style={{
+                  flex: isMobile ? 1 : 'none',
                   padding: '6px 12px',
                   borderRadius: 'var(--radius-sm)',
                   backgroundColor: 'rgba(255, 255, 255, 0.025)',
                   border: '1px solid var(--border)',
                   color: 'var(--text-primary)',
                   fontSize: 12,
-                  width: 180
+                  width: isMobile ? 'auto' : 180
                 }}
               />
             )}
@@ -413,17 +472,26 @@ export const TableManager: React.FC<Props> = ({
         </div>
 
         {/* Data Grid Table View */}
-        <div style={{ flex: 1, overflow: 'auto', backgroundColor: '#000000', padding: '0 16px' }}>
+        <div
+          className="touch-scroll"
+          style={{
+            flex: 1,
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            backgroundColor: '#000000',
+            padding: isMobile ? '0 10px' : '0 16px'
+          }}
+        >
           <div
             style={{
-              margin: '16px 0',
+              margin: isMobile ? '10px 0' : '16px 0',
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border)',
-              overflow: 'hidden',
+              overflowX: 'auto',
               backgroundColor: 'rgba(10, 10, 13, 0.8)'
             }}
           >
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 12 }}>
+            <table style={{ width: '100%', minWidth: 680, borderCollapse: 'collapse', textAlign: 'left', fontSize: 12 }}>
               <thead>
                 <tr
                   style={{
@@ -585,12 +653,14 @@ export const TableManager: React.FC<Props> = ({
         {/* Pagination Footer */}
         <div
           style={{
-            padding: '12px 24px',
+            padding: isMobile ? '10px 16px' : '12px 24px',
             borderTop: '1px solid var(--border)',
             backgroundColor: '#08080a',
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: 8,
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: isMobile ? 'center' : 'center',
             fontSize: 11.5,
             color: 'var(--text-secondary)'
           }}

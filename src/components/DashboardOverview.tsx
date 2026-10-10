@@ -14,6 +14,7 @@ import {
   Wrench,
   FileText
 } from 'lucide-react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface Props {
   tables: DatabaseTable[];
@@ -29,6 +30,7 @@ export const DashboardOverview: React.FC<Props> = ({
   onToggleLiveSimulation,
   onSelectTable,
 }) => {
+  const isMobile = useIsMobile(768);
   const facilities = tableData['POWER_FACILITY'] || [];
   const units = tableData['GENERATION_UNIT'] || [];
   const agreements = tableData['SUPPLY_AGREEMENT'] || [];
@@ -49,14 +51,15 @@ export const DashboardOverview: React.FC<Props> = ({
   return (
     <div
       style={{
-        padding: '24px 32px',
+        padding: isMobile ? '12px 14px' : '24px 32px',
         maxWidth: 1600,
         margin: '0 auto',
         display: 'flex',
         flexDirection: 'column',
-        gap: 24,
+        gap: isMobile ? 14 : 24,
         overflowY: 'auto',
-        height: 'calc(100vh - 60px)',
+        WebkitOverflowScrolling: 'touch',
+        height: isMobile ? 'calc(100vh - 54px - 56px)' : 'calc(100vh - 60px)',
         backgroundColor: '#000000'
       }}
     >
@@ -64,11 +67,13 @@ export const DashboardOverview: React.FC<Props> = ({
       <div
         className="card-glass"
         style={{
-          padding: '18px 24px',
+          padding: isMobile ? '14px 16px' : '18px 24px',
           borderRadius: 'var(--radius-lg)',
           display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'stretch' : 'center',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          gap: 12,
           backgroundColor: 'rgba(12, 12, 16, 0.85)'
         }}
       >
@@ -78,7 +83,7 @@ export const DashboardOverview: React.FC<Props> = ({
             <h1
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 17,
+                fontSize: isMobile ? 15 : 17,
                 fontWeight: 700,
                 color: '#ffffff',
                 letterSpacing: '-0.02em'
@@ -89,14 +94,14 @@ export const DashboardOverview: React.FC<Props> = ({
             <span
               className="tag-wafer"
               style={{
-                fontSize: 11,
-                padding: '3px 9px'
+                fontSize: 10.5,
+                padding: '2px 8px'
               }}
             >
               DuckDB Live State
             </span>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 3 }}>
+          <p style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginTop: 3 }}>
             Aggregated operational metrics derived directly from the 15 database tables.
           </p>
         </div>
@@ -106,6 +111,7 @@ export const DashboardOverview: React.FC<Props> = ({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 8,
             padding: '8px 16px',
             borderRadius: 'var(--radius-sm)',
@@ -115,7 +121,8 @@ export const DashboardOverview: React.FC<Props> = ({
             fontSize: 12,
             fontWeight: 500,
             cursor: 'pointer',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            width: isMobile ? '100%' : 'auto'
           }}
         >
           {isLiveSimulating ? <Pause size={13} /> : <Play size={13} />}
@@ -127,8 +134,8 @@ export const DashboardOverview: React.FC<Props> = ({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-          gap: 16
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(230px, 1fr))',
+          gap: isMobile ? 10 : 16
         }}
       >
         {/* Card 1 */}
@@ -283,8 +290,8 @@ export const DashboardOverview: React.FC<Props> = ({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-            gap: 16
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: isMobile ? 12 : 16
           }}
         >
           {facilities.map((fac) => {
@@ -408,8 +415,8 @@ export const DashboardOverview: React.FC<Props> = ({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
-          gap: 16
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(420px, 1fr))',
+          gap: isMobile ? 12 : 16
         }}
       >
         {/* Maintenance Log */}

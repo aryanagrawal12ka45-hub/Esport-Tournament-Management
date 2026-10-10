@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import type {
   DatabaseTable,
   TableRelation,
@@ -78,6 +79,7 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
   relations,
   onSelectTableForManagement
 }) => {
+  const isMobile = useIsMobile(768);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Pan and Zoom State
@@ -91,6 +93,15 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  // Touch state for 1-finger pan and 2-finger pinch-zoom
+  const touchStateRef = useRef<{
+    initialDist?: number;
+    initialZoom?: number;
+    initialPan?: { x: number; y: number };
+    midX?: number;
+    midY?: number;
+  }>({});
 
   // Filtering & Selection
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -251,6 +262,73 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
 
   const handleMouseUp = () => setIsDragging(false);
 
+  // Mobile Touch Gestures (1-finger pan, 2-finger pinch)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (
+      (e.target as HTMLElement).closest('.table-node') ||
+      (e.target as HTMLElement).closest('.canvas-ui') ||
+      (e.target as HTMLElement).closest('.slide-over-drawer')
+    ) {
+      return;
+    }
+
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - pan.x,
+        y: e.touches[0].clientY - pan.y
+      });
+    } else if (e.touches.length === 2) {
+      setIsDragging(false);
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const midX = (t1.clientX + t2.clientX) / 2;
+      const midY = (t1.clientY + t2.clientY) / 2;
+      touchStateRef.current = {
+        initialDist: dist,
+        initialZoom: zoomRef.current,
+        initialPan: { ...panRef.current },
+        midX,
+        midY
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDragging) {
+      setPan({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y
+      });
+    } else if (e.touches.length === 2 && touchStateRef.current.initialDist) {
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const ratio = currentDist / touchStateRef.current.initialDist;
+      const newZoom = Math.min(Math.max(touchStateRef.current.initialZoom! * ratio, 0.4), 1.6);
+
+      const midX = touchStateRef.current.midX!;
+      const midY = touchStateRef.current.midY!;
+      const initPan = touchStateRef.current.initialPan!;
+      const initZoom = touchStateRef.current.initialZoom!;
+
+      const canvasX = (midX - initPan.x) / initZoom;
+      const canvasY = (midY - initPan.y) / initZoom;
+
+      setZoom(newZoom);
+      setPan({
+        x: Math.round(midX - canvasX * newZoom),
+        y: Math.round(midY - canvasY * newZoom)
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    touchStateRef.current = {};
+  };
+
   const activeTable = tables.find((t) => t.id === activeTableId);
 
   const filteredTables = tables.filter((t) => {
@@ -325,10 +403,13 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{
         position: 'relative',
         width: '100%',
-        height: 'calc(100vh - 60px)',
+        height: isMobile ? 'calc(100vh - 54px - 56px)' : 'calc(100vh - 60px)',
         overflow: 'hidden',
         backgroundColor: '#000000',
         backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0)`,
@@ -343,18 +424,21 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
         className="canvas-ui"
         style={{
           position: 'absolute',
-          top: 16,
-          left: 20,
-          right: 20,
+          top: isMobile ? 10 : 16,
+          left: isMobile ? 12 : 20,
+          right: isMobile ? 12 : 20,
           display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 8,
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: isMobile ? 'stretch' : 'center',
           pointerEvents: 'none',
           zIndex: 30
         }}
       >
         {/* Domain Category Filter Segmented Wafers */}
         <div
+          className="touch-scroll"
           style={{
             pointerEvents: 'auto',
             display: 'flex',
@@ -362,13 +446,15 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
             gap: 4,
             padding: '4px 6px',
             borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(12, 12, 16, 0.9)',
+            backgroundColor: 'rgba(12, 12, 16, 0.92)',
             backdropFilter: 'blur(20px)',
             border: '1px solid var(--border)',
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: 'var(--shadow-md)',
+            maxWidth: '100%',
+            whiteSpace: 'nowrap'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', padding: '0 8px', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '0 6px', color: 'var(--text-muted)' }}>
             <Filter size={13} />
           </div>
           {(['All', 'Assets', 'Telemetry', 'Storage', 'Grid', 'Compliance'] as const).map((cat) => {
@@ -378,14 +464,15 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 style={{
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: isSelected ? 600 : 400,
-                  padding: '5px 12px',
+                  padding: '5px 11px',
                   borderRadius: 'var(--radius-sm)',
                   backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.09)' : 'transparent',
                   color: isSelected ? '#ffffff' : 'var(--text-secondary)',
                   border: isSelected ? '1px solid var(--border-metallic)' : '1px solid transparent',
-                  transition: 'all 0.15s ease'
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0
                 }}
               >
                 {cat}
@@ -396,7 +483,7 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
         </div>
 
         {/* Right: Search & View Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, pointerEvents: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, pointerEvents: 'auto', justifyContent: isMobile ? 'stretch' : 'flex-end' }}>
           {/* Quick Search */}
           <div
             style={{
@@ -405,10 +492,11 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
               gap: 8,
               padding: '6px 12px',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(12, 12, 16, 0.9)',
+              backgroundColor: 'rgba(12, 12, 16, 0.92)',
               backdropFilter: 'blur(20px)',
               border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow-md)'
+              boxShadow: 'var(--shadow-md)',
+              flex: isMobile ? 1 : 'none'
             }}
           >
             <Search size={13} style={{ color: 'var(--text-muted)' }} />
@@ -422,7 +510,7 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
                 border: 'none',
                 color: 'var(--text-primary)',
                 fontSize: 12,
-                width: 175,
+                width: isMobile ? '100%' : 175,
                 outline: 'none'
               }}
             />
@@ -433,48 +521,98 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
             )}
           </div>
 
-          {/* Zoom controls */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 3,
-              padding: '4px 6px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(12, 12, 16, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow-md)'
-            }}
-          >
-            <button
-              onClick={() => handleZoomButton(-0.15)}
-              title="Zoom Out"
-              style={{ padding: '5px 8px', color: 'var(--text-secondary)', borderRadius: 'var(--radius-sm)' }}
+          {/* Desktop Zoom controls */}
+          {!isMobile && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 3,
+                padding: '4px 6px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(12, 12, 16, 0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid var(--border)',
+                boxShadow: 'var(--shadow-md)'
+              }}
             >
-              <ZoomOut size={14} />
-            </button>
-            <span style={{ fontSize: 11.5, fontFamily: 'var(--font-mono)', minWidth: 38, textAlign: 'center', color: 'var(--text-muted)' }}>
-              {Math.round(zoom * 100)}%
-            </span>
-            <button
-              onClick={() => handleZoomButton(0.15)}
-              title="Zoom In"
-              style={{ padding: '5px 8px', color: 'var(--text-secondary)', borderRadius: 'var(--radius-sm)' }}
-            >
-              <ZoomIn size={14} />
-            </button>
-            <div style={{ width: 1, height: 16, backgroundColor: 'var(--border)', margin: '0 2px' }} />
-            <button
-              onClick={handleFitView}
-              title="Fit & Center View"
-              style={{ padding: '5px 8px', color: 'var(--text-secondary)', borderRadius: 'var(--radius-sm)' }}
-            >
-              <Maximize2 size={14} />
-            </button>
-          </div>
+              <button
+                onClick={() => handleZoomButton(-0.15)}
+                title="Zoom Out"
+                style={{ padding: '5px 8px', color: 'var(--text-secondary)', borderRadius: 'var(--radius-sm)' }}
+              >
+                <ZoomOut size={14} />
+              </button>
+              <span style={{ fontSize: 11.5, fontFamily: 'var(--font-mono)', minWidth: 38, textAlign: 'center', color: 'var(--text-muted)' }}>
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                onClick={() => handleZoomButton(0.15)}
+                title="Zoom In"
+                style={{ padding: '5px 8px', color: 'var(--text-secondary)', borderRadius: 'var(--radius-sm)' }}
+              >
+                <ZoomIn size={14} />
+              </button>
+              <div style={{ width: 1, height: 16, backgroundColor: 'var(--border)', margin: '0 2px' }} />
+              <button
+                onClick={handleFitView}
+                title="Fit & Center View"
+                style={{ padding: '5px 8px', color: 'var(--text-secondary)', borderRadius: 'var(--radius-sm)' }}
+              >
+                <Maximize2 size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Mobile Floating Zoom Controls (Bottom Right) */}
+      {isMobile && (
+        <div
+          className="canvas-ui"
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            right: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: '5px 8px',
+            borderRadius: 'var(--radius-md)',
+            backgroundColor: 'rgba(12, 12, 16, 0.92)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid var(--border-metallic)',
+            boxShadow: 'var(--shadow-lg)',
+            zIndex: 35
+          }}
+        >
+          <button
+            onClick={() => handleZoomButton(-0.15)}
+            title="Zoom Out"
+            style={{ padding: '6px 8px', color: 'var(--text-secondary)' }}
+          >
+            <ZoomOut size={15} />
+          </button>
+          <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', minWidth: 36, textAlign: 'center', color: '#ffffff' }}>
+            {Math.round(zoom * 100)}%
+          </span>
+          <button
+            onClick={() => handleZoomButton(0.15)}
+            title="Zoom In"
+            style={{ padding: '6px 8px', color: 'var(--text-secondary)' }}
+          >
+            <ZoomIn size={15} />
+          </button>
+          <div style={{ width: 1, height: 16, backgroundColor: 'var(--border)', margin: '0 2px' }} />
+          <button
+            onClick={handleFitView}
+            title="Center View"
+            style={{ padding: '6px 8px', color: 'var(--text-secondary)' }}
+          >
+            <Maximize2 size={15} />
+          </button>
+        </div>
+      )}
 
       {/* Main Content Layer */}
       <div
@@ -725,23 +863,23 @@ export const DatabaseSchemaCanvas: React.FC<Props> = ({
       <AnimatePresence>
         {activeTable && (
           <motion.div
-            initial={{ x: 460, opacity: 0 }}
+            initial={{ x: isMobile ? '100%' : 460, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 460, opacity: 0 }}
+            exit={{ x: isMobile ? '100%' : 460, opacity: 0 }}
             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
             className="slide-over-drawer"
             style={{
-              position: 'absolute',
+              position: 'fixed',
               top: 0,
               right: 0,
               bottom: 0,
-              width: 440,
+              left: isMobile ? 0 : 'auto',
+              width: isMobile ? '100%' : 440,
               backgroundColor: '#08080a',
-              borderLeft: '1px solid var(--border)',
-              borderTopLeftRadius: 'var(--radius-xl)',
-              borderBottomLeftRadius: 'var(--radius-xl)',
+              borderLeft: isMobile ? 'none' : '1px solid var(--border)',
+              borderRadius: isMobile ? 0 : 'var(--radius-xl) 0 0 var(--radius-xl)',
               boxShadow: 'var(--shadow-lg)',
-              zIndex: 40,
+              zIndex: 100,
               display: 'flex',
               flexDirection: 'column'
             }}
