@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ==========================================================================
+     Pitch-Black & Dark-Charcoal Luxury Theme (Adopted from Lab Project)
+     Aesthetic: True Pitch-Black (#000000), Charcoal & Graphite, Silver Metallic
+     Refined Organic Radii: Smooth curves (12px, 16px, 20px, 24px) - Zero Boxy Edges
+     ========================================================================== */
+
+  /* --- Canvas & Surfaces (True Pitch Black & Charcoal) --- */
+  --bg-primary: #000000;
+  --bg-secondary: #08080a;
+  --bg-tertiary: #0e0e12;
+  --bg-surface: #121216;
+  --bg-card: rgba(255, 255, 255, 0.025);
+  --bg-card-hover: rgba(255, 255, 255, 0.045);
+  --bg-card-active: rgba(255, 255, 255, 0.07);
+  --bg-input: #09090c;
+  --bg-panel: #0b0b0e;
+
+  /* --- Borders (Sub-pixel & Metallic Silver) --- */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --border-metallic: rgba(255, 255, 255, 0.22);
+  --border-focus: rgba(255, 255, 255, 0.35);
+
+  /* --- Typography Colors --- */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-dim: #52525b;
+
+  /* --- Refined Metallic & Titanium Accents --- */
+  --accent-titanium: #e4e4e7;
+  --accent-silver: #f4f4f5;
+  --accent-zinc: #a1a1aa;
+  --accent-cool: #d4d4d8;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-sky: #38bdf8;
+
+  /* --- Pure Clean Gradients --- */
+  --grad-hero: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  --grad-text: linear-gradient(135deg, #ffffff 30%, #d4d4d8 75%, #a1a1aa 100%);
+  --grad-text-silver: linear-gradient(135deg, #ffffff 40%, #e4e4e7 70%, #a1a1aa 100%);
+  --grad-card-border: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04), transparent);
+
+  /* --- Shadows & Depth --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.85);
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.7);
+
+  /* --- Typography Fleet --- */
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* --- Refined Organic Radii (Smooth, Curvature, Zero Boxy / Sharp Corners) --- */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Minimalist Dark Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xs);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Text selections */
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Button & Form Defaults */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  outline: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+  outline: none;
+}
+
+/* --- Metallic Silver Text Gradient --- */
+.text-gradient-silver {
+  background: var(--grad-text-silver);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--accent-silver);
+  display: inline-block;
+}
+
+/* --- Refined Dark Glass Cards (Smooth 20px Curvature) --- */
+.card-glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-card);
+}
+
+.card-glass:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* --- Organic Status Wafers (No Pills, No Sharp Boxes) --- */
+.tag-wafer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  transition: all 0.2s ease;
+}
+
+.tag-wafer:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-hover);
+}
+
+/* Flat Crisp Status Dot */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.green {
+  background-color: var(--accent-emerald);
+}
+.status-dot.amber {
+  background-color: var(--accent-amber);
+}
+.status-dot.silver {
+  background-color: var(--accent-silver);
+}
+.status-dot.gray {
+  background-color: var(--text-muted);
+}
