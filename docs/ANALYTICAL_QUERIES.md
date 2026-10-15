@@ -1,10 +1,10 @@
-# ⚡ Analytical SQL Queries & Benchmark Suite
+# Analytical SQL Queries and Benchmark Suite
 
 This document outlines the **7 high-performance analytical SQL queries** modeled in the **Renewable Energy DB Simulator**. These queries reflect advanced database capabilities tailored for industrial SCADA architectures, renewable microgrids, and high-frequency IoT streaming telemetry.
 
 ---
 
-## 📊 Summary Benchmark Matrix
+## Summary Benchmark Matrix
 
 | ID | Query Name | Advanced Feature | Primary Purpose | Vectorized Latency |
 | :--- | :--- | :--- | :--- | :--- |
@@ -18,17 +18,17 @@ This document outlines the **7 high-performance analytical SQL queries** modeled
 
 ---
 
-## 🔍 Detailed Query Walkthroughs
+## Detailed Query Walkthroughs
 
 ### Q01: Vectorized ASOF Temporal Alignment
 > **Feature**: `ASOF JOIN` (As-Of Join)  
 > **Target Engines**: DuckDB, Snowflake, ClickHouse, TimescaleDB, Kdb+
 
 #### Problem Context
-IoT sensors (pyranometers, anemometers) sample at sub-second frequencies, while meteorological environmental logs are sampled at discrete intervals (e.g., hourly). Traditional equality joins (`ON sensor.ts = env.ts`) yield zero matches due to clock drift. An unconstrained inequality cross-join is $O(N \times M)$ and computationally prohibitive.
+IoT sensors (pyranometers, anemometers) sample at sub-second frequencies, while meteorological environmental logs are sampled at discrete intervals (example: hourly). Traditional equality joins (`ON sensor.ts = env.ts`) yield zero matches due to clock drift. An unconstrained inequality cross-join is O(N * M) and computationally prohibitive.
 
 #### Solution
-The `ASOF JOIN` matches each sensor observation with the **nearest preceding** meteorological record in $O(N \log M)$ time using binary search over sorted timestamp vectors.
+The `ASOF JOIN` matches each sensor observation with the **nearest preceding** meteorological record in O(N log M) time using binary search over sorted timestamp vectors.
 
 ```sql
 SELECT 
@@ -70,7 +70,7 @@ ORDER BY t.ReadingTimestamp;
 Microgrid telemetry produces millions of raw generation ticks. Dashboards and billing engines require downsampled, constant-interval time buckets for reliable trend reporting without transferring gigabytes of raw data to clients.
 
 #### Solution
-Aggregates production into uniform 1-hour temporal buckets per facility, computing the observation count, aggregate energy generated ($kWh$), and average capacity factor ($CF\%$).
+Aggregates production into uniform 1-hour temporal buckets per facility, computing the observation count, aggregate energy generated (kWh), and average capacity factor (CF%).
 
 ```sql
 SELECT 
@@ -106,7 +106,7 @@ ORDER BY TimeWindow, u.FacilityID;
 A sudden drop in turbine or inverter generation could indicate equipment degradation, shading, or mechanical fault. Simple static thresholds trigger false alarms due to seasonal and diurnal variations.
 
 #### Solution
-A dynamic 3-period moving window (`ROWS BETWEEN 2 PRECEDING AND CURRENT ROW`) partitions by generator unit. If the current interval yield falls below $90\%$ of the rolling baseline, the query flags the row as `UNDERPERFORMING`.
+A dynamic 3-period moving window (`ROWS BETWEEN 2 PRECEDING AND CURRENT ROW`) partitions by generator unit. If the current interval yield falls below 90% of the rolling baseline, the query flags the row as `UNDERPERFORMING`.
 
 ```sql
 SELECT 
@@ -157,11 +157,11 @@ USING FIRST(Value);
 
 #### Transposed Column Structure
 - `Timestamp`
-- `Solar Irradiance` ($W/m^2$)
+- `Solar Irradiance` (W/m2)
 - `Inverter Core Temp` (°C)
-- `Wind Velocity` ($m/s$)
-- `Drive Shaft Vibration` ($mm/s$)
-- `Penstock Flow` ($m^3/s$)
+- `Wind Velocity` (m/s)
+- `Drive Shaft Vibration` (mm/s)
+- `Penstock Flow` (m3/s)
 - `Battery Pack Temp` (°C)
 
 ---
@@ -171,13 +171,13 @@ USING FIRST(Value);
 > **Target Engines**: PostgreSQL, DuckDB, Oracle, MySQL 8+, Trino
 
 #### Problem Context
-Executive dashboards require aggregation across multiple dimensions (e.g., Geographic Region and Facility Type) simultaneously, with regional subtotals and an overall portfolio grand total.
+Executive dashboards require aggregation across multiple dimensions (such as Geographic Region and Facility Type) simultaneously, with regional subtotals and an overall portfolio grand total.
 
 #### Solution
 The `ROLLUP` construct computes hierarchically nested subtotals:
 1. `(Region, FacilityType)`
-2. `(Region)` &rarr; Regional Subtotal
-3. `()` &rarr; Portfolio Grand Total
+2. `(Region)` to Regional Subtotal
+3. `()` to Portfolio Grand Total
 
 ```sql
 SELECT 
@@ -198,14 +198,14 @@ ORDER BY f.Region NULLS LAST, f.FacilityType NULLS LAST;
 
 ### Q06: BESS Battery Storage & Degradation Analytics
 > **Feature**: Derived Thermodynamic & Cycle Life Metrics  
-> **Target Engines**: All Relational / Analytical Engines
+> **Target Engines**: All Relational and Analytical Engines
 
 #### Problem Context
 Lithium-ion Battery Energy Storage Systems (BESS) represent critical capital investments. Grid operators must continuously monitor instantaneous charging/discharging modes, cell thermal stability, and long-term capacity retention (State of Health).
 
 #### Solution
-Analyzes directional power flow ($kW$) and projects residual capacity using empirical cycle degradation modeling:
-$$\text{Estimated SoH} = 100.0\% - (\text{CycleCount} \times 0.015)$$
+Analyzes directional power flow (kW) and projects residual capacity using empirical cycle degradation modeling:
+Estimated SoH = 100.0% - (CycleCount * 0.015)
 
 ```sql
 SELECT 

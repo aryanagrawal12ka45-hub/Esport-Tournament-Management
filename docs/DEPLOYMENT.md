@@ -1,10 +1,10 @@
-# 🚀 Deployment Guide
+# Deployment Guide
 
 This guide provides instructions for deploying the **Renewable Energy DB Simulator** to production environments, static hosts, and containerized cloud providers.
 
 ---
 
-## 📦 Build Verification
+## Build Verification
 
 Before deploying, ensure the application compiles cleanly without TypeScript errors or lint violations:
 
@@ -26,7 +26,7 @@ The optimized bundle is generated into the `dist/` directory.
 
 ---
 
-## ☁️ Deployment Options
+## Deployment Options
 
 ### 1. Vercel (Recommended)
 Vercel automatically detects Vite projects with zero configuration needed.

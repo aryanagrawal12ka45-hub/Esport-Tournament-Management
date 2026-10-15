@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Renewable Energy DB Simulator
+# Renewable Energy DB Simulator
 ### Interactive Multi-Facility SCADA, Time-Series & Microgrid Database Simulator
 
 [![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
@@ -14,66 +14,214 @@
   A state-of-the-art interactive microgrid relational database simulator and analytical engineering workbench. Built with React 19, TypeScript, and an obsidian-metallic wafer design system. Features an interactive 15-table entity-relationship canvas, real-time IoT telemetry streaming engine, complete in-memory CRUD table data manager, and a vectorized OLAP SQL query benchmark console.
 </p>
 
-[Explore Schema Docs](docs/DATABASE_SCHEMA.md) • [Analytical Queries](docs/ANALYTICAL_QUERIES.md) • [System Architecture](docs/ARCHITECTURE.md) • [Deployment Guide](docs/DEPLOYMENT.md)
+[Explore Schema Docs](docs/DATABASE_SCHEMA.md) | [Analytical Queries](docs/ANALYTICAL_QUERIES.md) | [System Architecture](docs/ARCHITECTURE.md) | [Deployment Guide](docs/DEPLOYMENT.md)
 
 ---
 
 </div>
 
-## 🌟 Key Features
+## Key Features
 
-### 📐 1. Interactive Infinite ERD Canvas
+### 1. Interactive Infinite ERD Canvas
 * **Vectorized Bezier Connectors**: Smooth cubic Bezier curves dynamically route between foreign-key and primary-key anchors, calculating optimal face attachment points.
-* **Pan, Zoom & Inertial Gestures**: Infinite canvas navigation with desktop mouse drag/wheel zoom and native multi-touch pinch-to-zoom for mobile devices ($0.25\times$ to $2.0\times$).
+* **Pan, Zoom & Inertial Gestures**: Infinite canvas navigation with desktop mouse drag and wheel zoom, plus native multi-touch pinch-to-zoom for mobile devices (0.25x to 2.0x).
 * **Live Relationship Traversal**: Click or hover any table or relationship connector to highlight dependent tables, active keys, and join cardinality badges.
-* **Instant SQL DDL Generator**: Export clean, ANSI/PostgreSQL-compliant `CREATE TABLE` and constraint DDL statements with a single click.
+* **Instant SQL DDL Generator**: Export clean, ANSI and PostgreSQL compliant `CREATE TABLE` and constraint DDL statements with a single click.
 * **Quick Subsystem Filtering**: Filter the canvas view across Assets, Telemetry, Storage, Grid, and Compliance subsystems.
 
-### ⏱️ 2. Real-Time IoT & SCADA Telemetry Stream
-* **Automated Streaming Engine**: Simulates periodic field sensor emissions ($2.8\text{s}$ event ticks) without blocking the UI thread.
-* **Dynamic Generation Drift**: Photovoltaic arrays, wind turbines, and hydro turbines log real-time power fluctuations ($kWh$), grid frequency oscillations ($49.95 - 50.05\text{ Hz}$), and capacity factors.
-* **Atmospheric & Solar Sensor Simulation**: Pyranometers, ultrasonic anemometers, and hydro flowmeters record ambient solar irradiance ($W/m^2$), wind speeds ($m/s$), and temperatures.
-* **Battery Energy Storage System (BESS) Dynamics**: Models real-time State of Charge ($SoC\%$) drift, cell core temperature variations, and charge/discharge cycling on a utility-scale battery substation.
+### 2. Real-Time IoT and SCADA Telemetry Stream
+* **Automated Streaming Engine**: Simulates periodic field sensor emissions (2.8s event ticks) without blocking the UI thread.
+* **Dynamic Generation Drift**: Photovoltaic arrays, wind turbines, and hydro turbines log real-time power fluctuations (kWh), grid frequency oscillations (49.95 to 50.05 Hz), and capacity factors.
+* **Atmospheric & Solar Sensor Simulation**: Pyranometers, ultrasonic anemometers, and hydro flowmeters record ambient solar irradiance (W/m2), wind speeds (m/s), and temperatures.
+* **Battery Energy Storage System (BESS) Dynamics**: Models real-time State of Charge (SoC%) drift, cell core temperature variations, and charge/discharge cycling on a utility-scale battery substation.
 
-### 📋 3. Full In-Memory CRUD Data Manager
+### 3. Full In-Memory CRUD Data Manager
 * **Transactional In-Memory Database**: Inspect, search, filter, insert, and delete rows in real time across all 15 relational tables.
 * **Global & Columnar Search**: Instant multi-column filtering with type-aware substring evaluation.
 * **Smart Insertion Modal**: Built-in validation checks nullable attributes, generates timestamps, and provides dropdown pickers for valid foreign keys.
 * **CSV Data Export**: Export active tables into structured CSV formats for external data science pipelines.
 
-### ⚡ 4. Vectorized Analytical SQL Query Console
-* **7 Pre-Engineered Benchmarks**: Benchmarks demonstrating advanced analytical time-series patterns modeled after modern columnar engines (DuckDB, TimescaleDB, ClickHouse).
-* **ASOF Temporal Alignment**: Match sub-second IoT telemetry to discrete weather observations in $O(N \log M)$ time.
+### 4. Vectorized Analytical SQL Query Console
+* **7 Pre-Engineered Benchmarks**: Demonstrates advanced analytical time-series patterns modeled after modern columnar engines (DuckDB, TimescaleDB, ClickHouse).
+* **ASOF Temporal Alignment**: Match sub-second IoT telemetry to discrete weather observations in O(N log M) time.
 * **Time-Series Downsampling**: Aggregate raw intervals into 1-hour analytical dispatch windows with `time_bucket()`.
 * **Rolling Window Moving Averages**: Compute 3-period rolling output baselines and automatically flag underperforming units.
 * **Native PIVOT Transposition**: Reshape polymorphic sensor metrics into columnar format without manual conditional aggregations.
 * **Hierarchical ROLLUP**: Multi-dimensional executive aggregations across geographic regions and facility types.
-* **BESS Degradation Analytics**: Calculate battery State of Health ($SoH\%$) based on cumulative cycle count aging.
+* **BESS Degradation Analytics**: Calculate battery State of Health (SoH%) based on cumulative cycle count aging.
 * **EXPLAIN ANALYZE Execution Profiling**: Inspect vectorized SIMD hash joins, morsel pipelines, and columnar scan timings.
 
-### 📱 5. Mobile-First & Responsive UX
+### 5. Mobile-First and Responsive UX
 * Designed from the ground up to support smartphones, tablets, laptops, and ultra-wide displays.
 * Touch-optimized ergonomics with tactile bottom navigation, swipeable data grids, adaptive modal sheets, and pinch-to-zoom canvas gestures.
 
 ---
 
-## 🗄️ Database Subsystems & 15 Relational Tables
+## Database Subsystems and Relational Entity-Relationship Diagram (ERD)
 
 The simulator models a comprehensive renewable energy enterprise comprising **15 normalized relational tables** organized into **5 core operational domains**:
 
-```
-+----------------------------------------------------------------------------------------------------+
-|                                    RENEWABLE ENERGY DB ARCHITECTURE                                |
-+----------------------------------------------------------------------------------------------------+
-|  [ASSETS]                      [TELEMETRY]                    [STORAGE]                            |
-|  - POWER_FACILITY              - ENVIRONMENTAL_TELEMETRY      - BATTERY_STORAGE_TELEMETRY          |
-|  - GENERATION_UNIT             - ENERGY_PRODUCTION_TIMESERIES                                      |
-|  - MAINTENANCE_ENGINEER        - IOT_SENSOR_REGISTRY          [GRID & OFFTAKE]                     |
-|  - EQUIPMENT_MAINTENANCE_LOG   - IOT_TELEMETRY_LOG            - DISTRIBUTION_COMPANY               |
-|                                                               - SUPPLY_AGREEMENT                   |
-|  [COMPLIANCE & ESG]                                           - ELECTRICITY_DISTRIBUTION           |
-|  - REGULATORY_AGENCY           - COMPLIANCE_INSPECTION        - CARBON_CREDIT_LEDGER               |
-+----------------------------------------------------------------------------------------------------+
+```mermaid
+erDiagram
+    POWER_FACILITY {
+        VARCHAR_10 FacilityID PK
+        VARCHAR_100 FacilityName
+        VARCHAR_30 FacilityType
+        VARCHAR_50 Region
+        DECIMAL TotalCapacityMW
+        DATE CommissionDate
+        DECIMAL Latitude
+        DECIMAL Longitude
+    }
+
+    GENERATION_UNIT {
+        VARCHAR_10 UnitID PK
+        VARCHAR_10 FacilityID FK
+        VARCHAR_50 UnitType
+        DECIMAL RatedCapacityKW
+        VARCHAR_20 OperationalStatus
+        DATE CommissionDate
+    }
+
+    ENVIRONMENTAL_TELEMETRY {
+        VARCHAR_10 EnvLogID PK
+        VARCHAR_10 FacilityID FK
+        TIMESTAMP LogTimestamp
+        DECIMAL SolarIrradiance
+        DECIMAL WindSpeed
+        DECIMAL WaterFlowRate
+        DECIMAL Temperature
+        DECIMAL HumidityPct
+    }
+
+    ENERGY_PRODUCTION_TIMESERIES {
+        VARCHAR_10 ProductionID PK
+        VARCHAR_10 UnitID FK
+        TIMESTAMP ProductionTimestamp
+        DECIMAL EnergyGeneratedKWh
+        DECIMAL GridFrequencyHz
+        DECIMAL CapacityFactorPct
+    }
+
+    IOT_SENSOR_REGISTRY {
+        VARCHAR_10 SensorID PK
+        VARCHAR_10 UnitID FK
+        VARCHAR_50 SensorCategory
+        VARCHAR_50 ModelNumber
+        INTEGER SamplingIntervalSec
+        VARCHAR_20 Status
+    }
+
+    IOT_TELEMETRY_LOG {
+        VARCHAR_10 TelemetryID PK
+        VARCHAR_10 SensorID FK
+        TIMESTAMP ReadingTimestamp
+        STRUCT MetricPayload
+        VARCHAR_ARRAY DiagnosticFlags
+        DECIMAL BatterySoCPct
+    }
+
+    BATTERY_STORAGE_TELEMETRY {
+        VARCHAR_10 BESSLogID PK
+        VARCHAR_10 FacilityID FK
+        TIMESTAMP LogTimestamp
+        DECIMAL StateOfChargePct
+        DECIMAL CellTemperatureC
+        DECIMAL ChargeDischargeRateKW
+        INTEGER CycleCount
+    }
+
+    MAINTENANCE_ENGINEER {
+        VARCHAR_10 EngineerID PK
+        VARCHAR_50 FirstName
+        VARCHAR_50 LastName
+        VARCHAR_50 Specialization
+        VARCHAR_40 CertificationLevel
+    }
+
+    EQUIPMENT_MAINTENANCE_LOG {
+        VARCHAR_10 MaintenanceID PK
+        VARCHAR_10 UnitID FK
+        VARCHAR_10 EngineerID FK
+        DATE MaintenanceDate
+        VARCHAR_255 ActionTaken
+        DECIMAL DowntimeHours
+        DECIMAL MaintenanceCost
+        VARCHAR_100 ComponentReplaced
+    }
+
+    DISTRIBUTION_COMPANY {
+        VARCHAR_10 CompanyID PK
+        VARCHAR_100 CompanyName
+        VARCHAR_50 LicenseNumber
+        VARCHAR_100 ContactEmail
+        VARCHAR_50 GridRegion
+    }
+
+    SUPPLY_AGREEMENT {
+        VARCHAR_10 AgreementID PK
+        VARCHAR_10 FacilityID FK
+        VARCHAR_10 CompanyID FK
+        DATE StartDate
+        DATE EndDate
+        DECIMAL ContractedCapacityMW
+        DECIMAL TariffPerKWh
+        VARCHAR_20 AgreementStatus
+    }
+
+    ELECTRICITY_DISTRIBUTION {
+        VARCHAR_10 DistributionID PK
+        VARCHAR_10 AgreementID FK
+        TIMESTAMP DispatchTimestamp
+        DECIMAL EnergySuppliedMWh
+        DECIMAL TransmissionLossPct
+    }
+
+    REGULATORY_AGENCY {
+        VARCHAR_10 AgencyID PK
+        VARCHAR_100 AgencyName
+        VARCHAR_50 Jurisdiction
+    }
+
+    COMPLIANCE_INSPECTION {
+        VARCHAR_10 InspectionID PK
+        VARCHAR_10 FacilityID FK
+        VARCHAR_10 AgencyID FK
+        DATE InspectionDate
+        VARCHAR_30 ComplianceStatus
+        DECIMAL AuditScore
+        VARCHAR_255 Notes
+    }
+
+    CARBON_CREDIT_LEDGER {
+        VARCHAR_10 CreditID PK
+        VARCHAR_10 FacilityID FK
+        DATE IssuanceDate
+        INTEGER CreditsIssued
+        DECIMAL CO2OffsetTons
+        VARCHAR_50 Standard
+        DECIMAL MarketValueUSD
+    }
+
+    POWER_FACILITY ||--o{ GENERATION_UNIT : "houses"
+    POWER_FACILITY ||--o{ ENVIRONMENTAL_TELEMETRY : "records"
+    POWER_FACILITY ||--o{ BATTERY_STORAGE_TELEMETRY : "monitors"
+    POWER_FACILITY ||--o{ SUPPLY_AGREEMENT : "supplies"
+    POWER_FACILITY ||--o{ COMPLIANCE_INSPECTION : "subject_to"
+    POWER_FACILITY ||--o{ CARBON_CREDIT_LEDGER : "issues"
+
+    GENERATION_UNIT ||--o{ ENERGY_PRODUCTION_TIMESERIES : "produces"
+    GENERATION_UNIT ||--o{ IOT_SENSOR_REGISTRY : "fitted_with"
+    GENERATION_UNIT ||--o{ EQUIPMENT_MAINTENANCE_LOG : "serviced_in"
+
+    IOT_SENSOR_REGISTRY ||--o{ IOT_TELEMETRY_LOG : "streams"
+
+    MAINTENANCE_ENGINEER ||--o{ EQUIPMENT_MAINTENANCE_LOG : "conducts"
+
+    DISTRIBUTION_COMPANY ||--o{ SUPPLY_AGREEMENT : "signs"
+    SUPPLY_AGREEMENT ||--o{ ELECTRICITY_DISTRIBUTION : "settles"
+
+    REGULATORY_AGENCY ||--o{ COMPLIANCE_INSPECTION : "oversees"
 ```
 
 | Subsystem | Table Name | Key Attributes & Foreign Keys | Description |
@@ -82,7 +230,7 @@ The simulator models a comprehensive renewable energy enterprise comprising **15
 | **Assets** | `GENERATION_UNIT` | `UnitID` (PK), `FacilityID` (FK), `UnitType`, `RatedCapacityKW`, `OperationalStatus` | Inverter blocks, wind turbines, Francis hydro turbines, BESS containers |
 | **Assets** | `MAINTENANCE_ENGINEER` | `EngineerID` (PK), `FirstName`, `LastName`, `Specialization`, `CertificationLevel` | Reliability engineers and high-voltage maintenance specialists |
 | **Assets** | `EQUIPMENT_MAINTENANCE_LOG` | `MaintenanceID` (PK), `UnitID` (FK), `EngineerID` (FK), `DowntimeHours`, `MaintenanceCost` | Service inspections, component replacements, downtime hours, and fiscal cost |
-| **Telemetry** | `ENVIRONMENTAL_TELEMETRY` | `EnvLogID` (PK), `FacilityID` (FK), `SolarIrradiance`, `WindSpeed`, `WaterFlowRate`, `Temperature` | Boundary weather station metrics (W/m², m/s, m³/s, °C) |
+| **Telemetry** | `ENVIRONMENTAL_TELEMETRY` | `EnvLogID` (PK), `FacilityID` (FK), `SolarIrradiance`, `WindSpeed`, `WaterFlowRate`, `Temperature` | Boundary weather station metrics (W/m2, m/s, m3/s, °C) |
 | **Telemetry** | `ENERGY_PRODUCTION_TIMESERIES`| `ProductionID` (PK), `UnitID` (FK), `EnergyGeneratedKWh`, `GridFrequencyHz`, `CapacityFactorPct` | High-frequency power generation yield records |
 | **Telemetry** | `IOT_SENSOR_REGISTRY` | `SensorID` (PK), `UnitID` (FK), `SensorCategory`, `ModelNumber`, `SamplingIntervalSec` | Pyranometers, anemometers, vibration probes, flowmeters |
 | **Telemetry** | `IOT_TELEMETRY_LOG` | `TelemetryID` (PK), `SensorID` (FK), `MetricPayload` (STRUCT), `DiagnosticFlags` (ARRAY) | Columnar time-series log with complex nested structures and alert tags |
@@ -94,16 +242,16 @@ The simulator models a comprehensive renewable energy enterprise comprising **15
 | **Compliance** | `COMPLIANCE_INSPECTION` | `InspectionID` (PK), `FacilityID` (FK), `AgencyID` (FK), `ComplianceStatus`, `AuditScore` | Environmental safety scorecards and grid interconnection audits |
 | **Compliance** | `CARBON_CREDIT_LEDGER` | `CreditID` (PK), `FacilityID` (FK), `CreditsIssued`, `CO2OffsetTons`, `Standard`, `MarketValueUSD` | Verified emission reduction certificates (Gold Standard, Verra, CDM) |
 
-> 📖 **Deep Dive**: Refer to the full [Database Schema Specification](docs/DATABASE_SCHEMA.md) for full data dictionaries, SQL DDL types, and normalization rationale.
+> Note: Refer to the full [Database Schema Specification](docs/DATABASE_SCHEMA.md) for complete data dictionaries, SQL DDL types, and normalization rationale.
 
 ---
 
-## ⚡ Analytical Query Showcase
+## Analytical Query Showcase
 
 Here is a glimpse of the analytical query benchmark suite available in the simulator:
 
 ### 1. Vectorized ASOF Temporal Alignment (`ASOF JOIN`)
-Aligns sub-second sensor ticks with hourly atmospheric records in $O(N \log M)$ time:
+Aligns sub-second sensor ticks with hourly atmospheric records in O(N log M) time:
 ```sql
 SELECT 
     t.TelemetryID, t.SensorID, r.SensorCategory,
@@ -135,7 +283,7 @@ ORDER BY TimeWindow, u.FacilityID;
 ```
 
 ### 3. Dynamic Anomaly Detection with Moving Window Frames
-Computes rolling 3-period baselines and flags equipment underperformance ($< 90\%$ baseline):
+Computes rolling 3-period baselines and flags equipment underperformance (less than 90% of baseline):
 ```sql
 SELECT 
     ProductionID, UnitID, ProductionTimestamp, EnergyGeneratedKWh,
@@ -154,11 +302,11 @@ FROM ENERGY_PRODUCTION_TIMESERIES
 ORDER BY UnitID, ProductionTimestamp;
 ```
 
-> 📖 **Full Query Suite**: Read [Analytical Queries & Benchmarks](docs/ANALYTICAL_QUERIES.md) for all 7 queries, execution plans, and output schemas.
+> Note: Refer to [Analytical Queries and Benchmarks](docs/ANALYTICAL_QUERIES.md) for all 7 queries, execution plans, and output schemas.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technologies |
 | :--- | :--- |
@@ -171,7 +319,7 @@ ORDER BY UnitID, ProductionTimestamp;
 
 ---
 
-## 🚀 Quick Start & Installation
+## Quick Start and Installation
 
 ### Prerequisites
 * **Node.js**: v18.0.0 or later (v20+ recommended)
@@ -206,7 +354,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 📂 Project Directory Structure
+## Project Directory Structure
 
 ```
 Renewable-Energy-Simulator/
@@ -249,30 +397,30 @@ Renewable-Energy-Simulator/
 
 ---
 
-## 🗺️ Roadmap & Future Enhancements
+## Roadmap and Future Enhancements
 
 - [ ] **WebAssembly DuckDB (`duckdb-wasm`)**: Execute live SQL queries in the browser client-side against Apache Arrow memory tables.
-- [ ] **Geospatial GIS Map View**: Render real geographic positions of facilities with Leaflet/MapLibre layers.
+- [ ] **Geospatial GIS Map View**: Render real geographic positions of facilities with Leaflet or MapLibre layers.
 - [ ] **SQL Migration Export**: Export relational schemas directly as PostgreSQL, TimescaleDB, and SQLite `.sql` migration files.
 - [ ] **CSV / JSON Telemetry Ingestion**: Allow users to drag and drop custom SCADA sensor data into the simulator.
 - [ ] **Grafana / InfluxDB Webhook Integration**: Simulated streaming webhook push to external monitoring services.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are warmly welcomed! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting pull requests.
+Contributions are warmly welcomed. Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting pull requests.
 
 To report bugs or request features, please open an [Issue on GitHub](https://github.com/rudy-07/Renewable-Energy-Simulator/issues).
 
 ---
 
-## 📜 License
+## License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 <div align="center">
-  <sub>Built with clean-tech precision by <a href="https://github.com/rudy-07">rudy-07</a>. Star ⭐ this repository if you find it helpful!</sub>
+  <sub>Built with clean-tech precision by <a href="https://github.com/rudy-07">rudy-07</a>. Star this repository if you find it helpful.</sub>
 </div>

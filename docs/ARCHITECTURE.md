@@ -1,10 +1,10 @@
-# 🏗️ Technical Architecture & Design System
+# Technical Architecture and Design System
 
 This document outlines the software engineering architecture, state management patterns, and graphic visualization engine powering the **Renewable Energy DB Simulator**.
 
 ---
 
-## 🏛️ System Architecture Overview
+## System Architecture Overview
 
 ```
                                   +------------------------------------+
@@ -37,7 +37,7 @@ This document outlines the software engineering architecture, state management p
 
 ---
 
-## 💾 In-Memory Relational Engine & Live Telemetry
+## In-Memory Relational Engine and Live Telemetry
 
 ### Reactive State Model
 The simulator implements an in-memory transactional database engine directly in React state (`App.tsx`):
@@ -56,31 +56,33 @@ The simulator implements an in-memory transactional database engine directly in 
 
 ### Asynchronous IoT Streaming Engine
 A dedicated tick worker (`useEffect` in `App.tsx`) simulates live microgrid telemetry:
-1. **Generation Production Tick**: Generates realistic fluctuating power outputs for Photovoltaic Arrays and Wind Turbines ($420 - 505\text{ kWh}$) and microgrid frequency oscillations ($49.95 - 50.05\text{ Hz}$).
-2. **Environmental Conditions Tick**: Modulates ambient solar irradiance ($920 - 1040\text{ W/m}^2$), ambient temperature, and wind speed.
+1. **Generation Production Tick**: Generates realistic fluctuating power outputs for Photovoltaic Arrays and Wind Turbines (420 to 505 kWh) and microgrid frequency oscillations (49.95 to 50.05 Hz).
+2. **Environmental Conditions Tick**: Modulates ambient solar irradiance (920 to 1040 W/m2), ambient temperature, and wind speed.
 3. **BESS Thermodynamic Update**: Simulates realistic battery State of Charge (SoC) drift and cycle increments.
 
 ---
 
-## 🎨 Interactive ERD Canvas & Math Engine
+## Interactive ERD Canvas and Math Engine
 
 The `DatabaseSchemaCanvas.tsx` component renders an interactive infinite canvas with dynamic entity tables and vector relationship lines.
 
 ### 1. Vectorized SVG Bezier Curves
 Relationships between tables are rendered dynamically as cubic Bezier SVG paths:
-$$\mathbf{B}(t) = (1-t)^3 \mathbf{P}_0 + 3(1-t)^2 t \mathbf{P}_1 + 3(1-t) t^2 \mathbf{P}_2 + t^3 \mathbf{P}_3$$
+```
+B(t) = (1-t)^3 * P0 + 3*(1-t)^2 * t * P1 + 3*(1-t) * t^2 * P2 + t^3 * P3
+```
 - **Connection Anchors**: Automatically calculate the closest geometric face (left/right/top/bottom) between source and target cards to prevent messy overlapping lines.
-- **Directional Gradients**: Foreign key vectors are rendered with animated metallic silver/amber SVG gradients indicating data flow direction.
+- **Directional Gradients**: Foreign key vectors are rendered with animated metallic silver or amber SVG gradients indicating data flow direction.
 - **Active Cardinality Badges**: Hovering or clicking on a relation or table card highlights interconnected foreign keys with glowing borders.
 
-### 2. Multi-Touch Gestures & Pan/Zoom
+### 2. Multi-Touch Gestures and Pan/Zoom
 - **Desktop**: Mouse drag panning with smooth inertial dampening; mouse-wheel zooming centered around cursor coordinates.
-- **Mobile Touch**: Full two-finger multi-touch pinch-to-zoom calculation with distance delta tracking ($d = \sqrt{\Delta x^2 + \Delta y^2}$).
-- **Viewport Constraints**: Clamps zoom factors between $0.25\times$ and $2.0\times$ with single-click `Reset View` and `Center Canvas` controls.
+- **Mobile Touch**: Full two-finger multi-touch pinch-to-zoom calculation with distance delta tracking.
+- **Viewport Constraints**: Clamps zoom factors between 0.25x and 2.0x with single-click `Reset View` and `Center Canvas` controls.
 
 ---
 
-## 💎 Design System & Aesthetic Principles
+## Design System and Aesthetic Principles
 
 The application adheres to an **ultra-dark, metallic wafer and brushed steel design philosophy**:
 
@@ -98,9 +100,9 @@ The application adheres to an **ultra-dark, metallic wafer and brushed steel des
 
 ---
 
-## 📱 Responsive & Mobile-First Architecture
+## Responsive and Mobile-First Architecture
 
 The application provides a responsive experience across all viewports (from 320px mobile screens to 4K ultra-wide monitors):
 - **Bottom Navigation Bar**: Mobile devices display an ergonomic bottom tab bar with tactile touch feedback.
-- **Drawer & Canvas Controls**: Floating canvas toolbars reposition and minimize gracefully on narrow screens.
-- **Table Virtualization & Horizontal Scroll**: Data grids preserve column alignment with sticky primary key indicators and horizontal touch gliding.
+- **Drawer and Canvas Controls**: Floating canvas toolbars reposition and minimize gracefully on narrow screens.
+- **Table Virtualization and Horizontal Scroll**: Data grids preserve column alignment with sticky primary key indicators and horizontal touch gliding.
