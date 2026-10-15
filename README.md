@@ -389,8 +389,6 @@ Renewable-Energy-Simulator/
 │   └── main.tsx                # React DOM root bootstrapping
 ├── tsconfig.json               # TypeScript workspace compiler settings
 ├── vite.config.ts              # Vite bundler configuration
-├── CODE_OF_CONDUCT.md          # Contributor Covenant Code of Conduct
-├── CONTRIBUTING.md             # Contribution guidelines & coding conventions
 ├── LICENSE                     # MIT Open Source License
 └── README.md                   # Project overview & documentation index
 ```
