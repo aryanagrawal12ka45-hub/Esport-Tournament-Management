@@ -11,7 +11,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
 <p align="center">
-  A state-of-the-art interactive microgrid relational database simulator and analytical engineering workbench. Built with React 19, TypeScript, and an obsidian-metallic wafer design system. Features an interactive 15-table entity-relationship canvas, real-time IoT telemetry streaming engine, complete in-memory CRUD table data manager, and a vectorized OLAP SQL query benchmark console.
+  An interactive microgrid relational database simulator and analytical engineering workbench. Built with React 19, TypeScript, and an obsidian-metallic wafer design system. Features an interactive 15-table entity-relationship canvas, real-time IoT telemetry streaming engine, complete in-memory CRUD table data manager, and a vectorized OLAP SQL query benchmark console.
 </p>
 
 [Explore Schema Docs](docs/DATABASE_SCHEMA.md) | [Analytical Queries](docs/ANALYTICAL_QUERIES.md) | [System Architecture](docs/ARCHITECTURE.md) | [Deployment Guide](docs/DEPLOYMENT.md)
@@ -394,24 +394,6 @@ Renewable-Energy-Simulator/
 ├── LICENSE                     # MIT Open Source License
 └── README.md                   # Project overview & documentation index
 ```
-
----
-
-## Roadmap and Future Enhancements
-
-- [ ] **WebAssembly DuckDB (`duckdb-wasm`)**: Execute live SQL queries in the browser client-side against Apache Arrow memory tables.
-- [ ] **Geospatial GIS Map View**: Render real geographic positions of facilities with Leaflet or MapLibre layers.
-- [ ] **SQL Migration Export**: Export relational schemas directly as PostgreSQL, TimescaleDB, and SQLite `.sql` migration files.
-- [ ] **CSV / JSON Telemetry Ingestion**: Allow users to drag and drop custom SCADA sensor data into the simulator.
-- [ ] **Grafana / InfluxDB Webhook Integration**: Simulated streaming webhook push to external monitoring services.
-
----
-
-## Contributing
-
-Contributions are warmly welcomed. Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting pull requests.
-
-To report bugs or request features, please open an [Issue on GitHub](https://github.com/rudy-07/Renewable-Energy-Simulator/issues).
 
 ---
 
