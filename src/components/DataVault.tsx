@@ -8,7 +8,8 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown
+  ArrowUpDown,
+  Lock
 } from 'lucide-react';
 import { useDatabase } from '../store/databaseContext';
 import { SUBSYSTEMS_META, type SubsystemCategory } from '../data/schema';
@@ -24,7 +25,9 @@ export const DataVault: React.FC = () => {
     selectedTableId,
     setSelectedTableId,
     deleteRow,
-    relations
+    relations,
+    isAdmin,
+    setAdminModalOpen
   } = useDatabase();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,6 +90,10 @@ export const DataVault: React.FC = () => {
   };
 
   const handleDelete = (row: Record<string, any>) => {
+    if (!isAdmin) {
+      setAdminModalOpen(true);
+      return;
+    }
     if (!pkCol) return;
     const pkVal = String(row[pkCol.name]);
     if (window.confirm(`Delete record where ${pkCol.name} = '${pkVal}'?`)) {
@@ -150,9 +157,17 @@ export const DataVault: React.FC = () => {
               Data Vault & Relational CRUD Explorer
             </h2>
           </div>
-          <p className="text-xs text-muted font-mono mt-1">
-            Browse, Filter, Inspect Cascade Dependencies & Manage Schema Entities
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-xs text-muted font-mono">
+              Browse, Filter, Inspect Cascade Dependencies & Manage Schema Entities
+            </p>
+            <StatusPill
+              label={isAdmin ? 'ADMIN: WRITE UNLOCKED' : 'READ-ONLY MODE'}
+              variant={isAdmin ? 'success' : 'neutral'}
+              size="sm"
+              title={isAdmin ? 'Administrator write access active' : 'Read-only view. Admin login required to insert, edit or delete.'}
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -168,12 +183,21 @@ export const DataVault: React.FC = () => {
           <button
             type="button"
             onClick={() => {
+              if (!isAdmin) {
+                setAdminModalOpen(true);
+                return;
+              }
               setDrawerMode('create');
               setDrawerOpen(true);
             }}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-on-primary font-mono text-xs font-bold uppercase tracking-wider hover:bg-primary-hover transition-all cursor-pointer shadow-sm"
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm ${
+              isAdmin
+                ? 'bg-primary text-on-primary hover:bg-primary-hover'
+                : 'bg-surface-2 text-token border border-token hover:bg-surface-3'
+            }`}
+            title={isAdmin ? 'Insert New Record' : 'Admin Login Required to Insert Records'}
           >
-            <Plus className="w-3.5 h-3.5" />
+            {isAdmin ? <Plus className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5 text-primary-token" />}
             <span>Insert Record</span>
           </button>
         </div>
@@ -360,12 +384,16 @@ export const DataVault: React.FC = () => {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  if (!isAdmin) {
+                                    setAdminModalOpen(true);
+                                    return;
+                                  }
                                   setEditingRecord(row);
                                   setDrawerMode('edit');
                                   setDrawerOpen(true);
                                 }}
                                 className="p-1 text-muted hover:text-primary-token rounded-md hover:bg-surface transition-colors cursor-pointer"
-                                title="Edit Record"
+                                title={isAdmin ? 'Edit Record' : 'Admin Login Required to Edit Record'}
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
@@ -373,10 +401,14 @@ export const DataVault: React.FC = () => {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  if (!isAdmin) {
+                                    setAdminModalOpen(true);
+                                    return;
+                                  }
                                   handleDelete(row);
                                 }}
                                 className="p-1 text-muted hover:text-danger-token rounded-md hover:bg-surface transition-colors cursor-pointer"
-                                title="Delete Record"
+                                title={isAdmin ? 'Delete Record' : 'Admin Login Required to Delete Record'}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>

@@ -16,7 +16,9 @@ import {
   Moon,
   RotateCcw,
   ArrowRight,
-  Table as TableIcon
+  Table as TableIcon,
+  Lock,
+  ShieldCheck
 } from 'lucide-react';
 import { useDatabase } from '../store/databaseContext';
 
@@ -31,7 +33,9 @@ export const CommandPalette: React.FC = () => {
     setIsLiveSimulating,
     theme,
     toggleTheme,
-    resetDatabase
+    resetDatabase,
+    isAdmin,
+    setAdminModalOpen
   } = useDatabase();
 
   const [query, setQuery] = useState('');
@@ -147,6 +151,13 @@ export const CommandPalette: React.FC = () => {
 
     // System Controls
     {
+      id: 'ctrl_admin',
+      title: isAdmin ? 'Administrator Console (Active - Full Write Permissions)' : 'Administrator Login (Authenticate for Write Access)',
+      category: 'System Control',
+      icon: isAdmin ? ShieldCheck : Lock,
+      action: () => setAdminModalOpen(true)
+    },
+    {
       id: 'ctrl_sim',
       title: isLiveSimulating ? 'Pause Telemetry Simulation' : 'Resume Telemetry Simulation',
       category: 'System Control',
@@ -166,6 +177,10 @@ export const CommandPalette: React.FC = () => {
       category: 'System Control',
       icon: RotateCcw,
       action: () => {
+        if (!isAdmin) {
+          setAdminModalOpen(true);
+          return;
+        }
         if (window.confirm('Reset all relational tables back to initial seed data?')) {
           resetDatabase();
         }

@@ -7,7 +7,9 @@ import {
   Search,
   History,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  ShieldAlert,
+  Lock
 } from 'lucide-react';
 import { useDatabase } from '../store/databaseContext';
 import { BENCHMARK_QUERIES } from '../data/queries';
@@ -17,7 +19,7 @@ import { HudCard } from './ui/HudCard';
 import { StatusPill } from './ui/StatusPill';
 
 export const QueryLab: React.FC = () => {
-  const { tableData, duckDbStatus, selectedBenchmarkId, setSelectedBenchmarkId } = useDatabase();
+  const { tableData, duckDbStatus, selectedBenchmarkId, setSelectedBenchmarkId, isAdmin, setAdminModalOpen } = useDatabase();
 
   const currentBenchmark =
     BENCHMARK_QUERIES.find((q) => q.id.toLowerCase() === (selectedBenchmarkId || '').toLowerCase()) || BENCHMARK_QUERIES[0];
@@ -36,7 +38,7 @@ export const QueryLab: React.FC = () => {
     setIsRunning(true);
 
     try {
-      const res = await executeQuery(targetSql, tableData, benchId || selectedBenchmarkId);
+      const res = await executeQuery(targetSql, tableData, benchId || selectedBenchmarkId, isAdmin);
       setExecutionResult(res);
 
       // Add to history
@@ -324,7 +326,7 @@ export const QueryLab: React.FC = () => {
             }
           >
             {/* Live Mutation Banner */}
-            {executionResult?.isMutation && (
+            {executionResult?.isMutation && !executionResult?.error && (
               <div className="mb-3 p-3 rounded-lg bg-success-soft border border-success-token text-xs font-mono text-success-token flex items-center gap-2.5">
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                 <div className="min-w-0">
@@ -333,15 +335,30 @@ export const QueryLab: React.FC = () => {
                 </div>
               </div>
             )}
+            {executionResult?.error && (
+              <div className="mb-3 p-3 rounded-lg bg-danger-soft border border-danger-token text-xs font-mono text-danger-token flex items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2 min-w-0">
+                  <ShieldAlert className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">{executionResult.error}</span>
+                </div>
+                {!isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setAdminModalOpen(true)}
+                    className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded bg-surface border border-token hover:border-strong text-token font-bold text-xs cursor-pointer shadow-sm transition-colors"
+                  >
+                    <Lock className="w-3 h-3 text-primary-token" />
+                    <span>Log In as Admin</span>
+                  </button>
+                )}
+              </div>
+            )}
+
             {activeTab === 'results' ? (
               <div className="overflow-x-auto max-h-[380px] custom-scrollbar border border-token rounded-lg">
                 {!executionResult ? (
                   <div className="py-12 text-center text-xs font-mono text-muted">
                     Click "Execute Query" to run.
-                  </div>
-                ) : executionResult.error ? (
-                  <div className="p-4 text-xs font-mono text-danger-token bg-danger-soft border border-danger-token">
-                    {executionResult.error}
                   </div>
                 ) : executionResult.rows.length === 0 ? (
                   <div className="py-12 text-center text-xs font-mono text-muted">

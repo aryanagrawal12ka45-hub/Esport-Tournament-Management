@@ -13,6 +13,7 @@ import { PlSqlLab } from './components/PlSqlLab';
 import { IntegrityDesk } from './components/IntegrityDesk';
 import { ScoringAcademy } from './components/ScoringAcademy';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { AdminLoginModal } from './components/AdminLoginModal';
 
 const AppContent: React.FC = () => {
   const { activeTab } = useDatabase();
@@ -52,6 +53,9 @@ const AppContent: React.FC = () => {
 
       {/* Global Command Palette (Ctrl+K) */}
       <CommandPalette />
+
+      {/* Admin Authentication & Console Modal */}
+      <AdminLoginModal />
     </div>
   );
 };

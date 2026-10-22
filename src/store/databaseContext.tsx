@@ -54,7 +54,12 @@ export interface DatabaseContextType {
   tables: DatabaseTable[];
   relations: TableRelation[];
 
-  // CRUD
+  // CRUD & Permissions
+  isAdmin: boolean;
+  adminModalOpen: boolean;
+  setAdminModalOpen: (open: boolean) => void;
+  adminLogin: (password: string) => { success: boolean; error?: string };
+  adminLogout: () => void;
   insertRow: (tableId: string, newRow: Record<string, any>) => { success: boolean; error?: string };
   updateRow: (
     tableId: string,
@@ -111,6 +116,40 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [tableData, setTableData] = useState<Record<string, any[]>>(() => loadPersistedTableData());
   const [tables] = useState<DatabaseTable[]>(INITIAL_TABLES);
   const [relations] = useState<TableRelation[]>(INITIAL_RELATIONS);
+
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('arenadb_is_admin') === 'true';
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+  const [adminModalOpen, setAdminModalOpen] = useState<boolean>(false);
+
+  const adminLogin = useCallback((password: string): { success: boolean; error?: string } => {
+    if (password === 'aryan@12345') {
+      setIsAdmin(true);
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('arenadb_is_admin', 'true');
+        } catch {}
+      }
+      return { success: true };
+    }
+    return { success: false, error: 'Authentication failed: Invalid administrator credentials.' };
+  }, []);
+
+  const adminLogout = useCallback(() => {
+    setIsAdmin(false);
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.removeItem('arenadb_is_admin');
+      } catch {}
+    }
+  }, []);
 
   const setActiveTab = useCallback((tab: string) => {
     setActiveTabState(tab);
@@ -336,6 +375,13 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // CRUD: Insert
   const insertRow = useCallback(
     (tableId: string, newRow: Record<string, any>): { success: boolean; error?: string } => {
+      if (!isAdmin) {
+        return {
+          success: false,
+          error: 'Unauthorized: Administrator privileges required to insert records. Please log in as Admin.'
+        };
+      }
+
       const table = tables.find((t) => t.id === tableId);
       if (!table) return { success: false, error: `Table ${tableId} not found.` };
 
@@ -361,7 +407,7 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       return { success: true };
     },
-    [tables, tableData, validateAndEnforceIntegrity]
+    [tables, tableData, validateAndEnforceIntegrity, isAdmin]
   );
 
   // CRUD: Update
@@ -371,6 +417,13 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       primaryKeyValue: string,
       updatedFields: Record<string, any>
     ): { success: boolean; error?: string } => {
+      if (!isAdmin) {
+        return {
+          success: false,
+          error: 'Unauthorized: Administrator privileges required to modify records. Please log in as Admin.'
+        };
+      }
+
       const table = tables.find((t) => t.id === tableId);
       if (!table) return { success: false, error: `Table ${tableId} not found.` };
 
@@ -399,7 +452,7 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       return { success: true };
     },
-    [tables, tableData, validateAndEnforceIntegrity]
+    [tables, tableData, validateAndEnforceIntegrity, isAdmin]
   );
 
   // CRUD: Delete with referential integrity cascade protection
@@ -408,6 +461,13 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tableId: string,
       primaryKeyValue: string
     ): { success: boolean; error?: string; cascadeBlockedBy?: string } => {
+      if (!isAdmin) {
+        return {
+          success: false,
+          error: 'Unauthorized: Administrator privileges required to delete records. Please log in as Admin.'
+        };
+      }
+
       const table = tables.find((t) => t.id === tableId);
       if (!table) return { success: false, error: `Table ${tableId} not found.` };
 
@@ -435,11 +495,16 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       return { success: true };
     },
-    [tables, relations, tableData]
+    [tables, relations, tableData, isAdmin]
   );
 
   // Reset to initial seed
   const resetDatabase = useCallback(() => {
+    if (!isAdmin) {
+      setAdminModalOpen(true);
+      return;
+    }
+
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem(STORAGE_KEY);
@@ -448,7 +513,7 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const freshSeed = getInitialTableData();
     setTableData(freshSeed);
     syncTablesToDuckDB(freshSeed).catch(() => {});
-  }, []);
+  }, [isAdmin]);
 
   const syncWithDuckDb = useCallback(async () => {
     await syncTablesToDuckDB(tableData);
@@ -486,6 +551,11 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tableData,
       tables,
       relations,
+      isAdmin,
+      adminModalOpen,
+      setAdminModalOpen,
+      adminLogin,
+      adminLogout,
       insertRow,
       updateRow,
       deleteRow,
@@ -517,6 +587,11 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tableData,
       tables,
       relations,
+      isAdmin,
+      adminModalOpen,
+      setAdminModalOpen,
+      adminLogin,
+      adminLogout,
       insertRow,
       updateRow,
       deleteRow,

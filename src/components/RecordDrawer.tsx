@@ -20,7 +20,7 @@ export const RecordDrawer: React.FC<RecordDrawerProps> = ({
   initialRecord,
   onSuccess
 }) => {
-  const { tables, tableData, insertRow, updateRow } = useDatabase();
+  const { tables, tableData, insertRow, updateRow, isAdmin, setAdminModalOpen } = useDatabase();
   const table = tables.find((t) => t.id === tableId);
 
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -59,6 +59,12 @@ export const RecordDrawer: React.FC<RecordDrawerProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    if (!isAdmin) {
+      setErrorMessage('Unauthorized: Administrator authentication required to modify database records.');
+      setAdminModalOpen(true);
+      return;
+    }
 
     if (mode === 'create') {
       const res = insertRow(tableId, formData);

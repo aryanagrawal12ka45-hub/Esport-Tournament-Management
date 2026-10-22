@@ -15,7 +15,9 @@ import {
   Search,
   Zap,
   Menu,
-  X
+  X,
+  Lock,
+  ShieldCheck
 } from 'lucide-react';
 import { useDatabase, type ThemeMode } from '../store/databaseContext';
 import { ROUTES } from '../constants/routes';
@@ -46,7 +48,9 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
     setIsLiveSimulating,
     setCommandPaletteOpen,
     stats,
-    tables
+    tables,
+    isAdmin,
+    setAdminModalOpen
   } = useDatabase();
 
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -736,6 +740,61 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
               })}
             </div>
           )}
+
+          {/* Admin Mode Trigger: Full Width (Expanded) or Icon (Collapsed) */}
+          {collapsed ? (
+            <div className="relative group flex justify-center mt-1">
+              <button
+                type="button"
+                onClick={() => setAdminModalOpen(true)}
+                className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all cursor-pointer sb-focus-visible"
+                style={{
+                  backgroundColor: isAdmin ? 'var(--sb-active-bg)' : 'transparent',
+                  color: isAdmin ? 'var(--sb-active-text)' : 'var(--sb-text-muted)',
+                  border: '1px solid var(--sb-border)'
+                }}
+                title={isAdmin ? 'Administrator Mode (Active)' : 'Admin Login'}
+                aria-label={isAdmin ? 'Administrator Mode: Active' : 'Admin Login'}
+              >
+                {isAdmin ? <ShieldCheck className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+              </button>
+              <div
+                className="hidden group-hover:flex group-focus-within:flex absolute left-full ml-3 px-2.5 py-1 rounded-[6px] text-xs font-mono font-medium shadow-2xl pointer-events-none whitespace-nowrap z-50 items-center gap-1.5"
+                style={{
+                  background: 'var(--sb-bg)',
+                  color: 'var(--sb-text)',
+                  border: '1px solid var(--sb-border)',
+                  boxShadow: 'var(--sb-shadow)'
+                }}
+              >
+                <span>{isAdmin ? 'Admin: ACTIVE' : 'Admin Login'}</span>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setAdminModalOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-xs font-mono font-bold transition-all cursor-pointer sb-focus-visible mt-1"
+              style={{
+                backgroundColor: isAdmin ? 'var(--sb-active-bg)' : 'var(--sb-field-bg)',
+                color: isAdmin ? 'var(--sb-active-text)' : 'var(--sb-text)',
+                border: '1px solid var(--sb-field-border)'
+              }}
+              title={isAdmin ? 'Manage Admin Access & Privileges' : 'Log in as Administrator'}
+            >
+              <div className="flex items-center gap-2">
+                {isAdmin ? (
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                ) : (
+                  <Lock className="w-3.5 h-3.5 opacity-70" />
+                )}
+                <span>{isAdmin ? 'Admin Active' : 'Admin Login'}</span>
+              </div>
+              <span className="text-[10px] font-normal uppercase opacity-85">
+                {isAdmin ? 'UNLOCKED' : 'LOCKED'}
+              </span>
+            </button>
+          )}
         </div>
       </aside>
 
@@ -986,6 +1045,30 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
                   );
                 })}
               </div>
+
+              {/* Admin Mode Trigger in Mobile Drawer */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileDrawerOpen(false);
+                  setAdminModalOpen(true);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-xs font-mono font-bold transition-all cursor-pointer sb-focus-visible mt-2"
+                style={{
+                  backgroundColor: isAdmin ? 'var(--sb-active-bg)' : 'var(--sb-field-bg)',
+                  color: isAdmin ? 'var(--sb-active-text)' : 'var(--sb-text)',
+                  border: '1px solid var(--sb-field-border)'
+                }}
+                title={isAdmin ? 'Manage Admin Access' : 'Log in as Administrator'}
+              >
+                <div className="flex items-center gap-2">
+                  {isAdmin ? <ShieldCheck className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5 opacity-70" />}
+                  <span>{isAdmin ? 'Admin Console' : 'Admin Login'}</span>
+                </div>
+                <span className="text-[10px] font-normal uppercase opacity-85">
+                  {isAdmin ? 'ACTIVE' : 'LOCKED'}
+                </span>
+              </button>
             </div>
           </aside>
         </div>

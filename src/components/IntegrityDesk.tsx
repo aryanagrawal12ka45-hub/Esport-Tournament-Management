@@ -14,7 +14,7 @@ import { Button } from './ui/Button';
 type KanbanColumnId = 'Under Review' | 'Cleared' | 'Warning / Fine' | 'Suspended';
 
 export const IntegrityDesk: React.FC = () => {
-  const { tableData, updateRow } = useDatabase();
+  const { tableData, updateRow, isAdmin, setAdminModalOpen } = useDatabase();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMatch] = useState('ALL');
 
@@ -47,6 +47,10 @@ export const IntegrityDesk: React.FC = () => {
   };
 
   const handleUpdateStatus = (antiCheatId: string, newStatus: string) => {
+    if (!isAdmin) {
+      setAdminModalOpen(true);
+      return;
+    }
     updateRow('ANTI_CHEAT', antiCheatId, { CheatStatus: newStatus });
   };
 

@@ -16,7 +16,9 @@ import {
   Network,
   Terminal,
   Code2,
-  ShieldAlert
+  ShieldAlert,
+  ShieldCheck,
+  Lock
 } from 'lucide-react';
 import { useDatabase } from '../store/databaseContext';
 import { ROUTES } from '../constants/routes';
@@ -34,7 +36,9 @@ export const TopStatusStrip: React.FC = () => {
     themeMode,
     cycleTheme,
     resolvedTheme,
-    setCommandPaletteOpen
+    setCommandPaletteOpen,
+    isAdmin,
+    setAdminModalOpen
   } = useDatabase();
 
   const navTabs = [
@@ -64,6 +68,10 @@ export const TopStatusStrip: React.FC = () => {
   }, []);
 
   const handleReset = () => {
+    if (!isAdmin) {
+      setAdminModalOpen(true);
+      return;
+    }
     if (window.confirm('Reset all relational tables back to tournament initial seed state?')) {
       setResetting(true);
       resetDatabase();
@@ -175,6 +183,25 @@ export const TopStatusStrip: React.FC = () => {
           >
             <RotateCcw className={`w-3.5 h-3.5 ${resetting ? 'animate-spin' : ''}`} />
             <span className="hidden xl:inline">RESET</span>
+          </button>
+
+          {/* Admin Login / Status Trigger */}
+          <button
+            type="button"
+            onClick={() => setAdminModalOpen(true)}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-mono font-bold transition-all cursor-pointer shadow-sm ${
+              isAdmin
+                ? 'bg-success-soft text-success-token border-success-token hover:bg-surface-3'
+                : 'bg-surface-2 text-token border-token hover:bg-surface-3 hover:border-strong'
+            }`}
+            title={isAdmin ? 'Administrator active (Full write/delete access)' : 'Admin Login (Required for write & delete)'}
+          >
+            {isAdmin ? (
+              <ShieldCheck className="w-3.5 h-3.5 text-success-token" />
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-primary-token" />
+            )}
+            <span>{isAdmin ? 'ADMIN' : 'ADMIN LOGIN'}</span>
           </button>
 
           {/* Theme Switcher: Light / Dark / System */}

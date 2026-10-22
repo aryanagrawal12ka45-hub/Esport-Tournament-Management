@@ -11,10 +11,27 @@ import { notifyDuckDbMutation, applyFallbackDml } from './mutations';
 export async function executeQuery(
   sql: string,
   tableData: Record<string, any[]>,
-  benchmarkId?: string
+  benchmarkId?: string,
+  isAdmin: boolean = false
 ): Promise<QueryExecutionResult> {
   const startTime = performance.now();
   const isMutation = /^\s*(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|REPLACE)\b/i.test(sql);
+
+  // Security gate: non-admin users cannot mutate database
+  if (isMutation && !isAdmin) {
+    return {
+      columns: ['Status', 'Operation', 'Error'],
+      rows: [
+        ['DENIED', sql.trim().split(/\s+/)[0].toUpperCase(), 'Unauthorized: Administrator authentication required to execute INSERT, UPDATE, DELETE, or DDL operations.']
+      ],
+      durationMs: 0,
+      isDuckDb: false,
+      rowCount: 0,
+      error: 'Administrator authentication required to execute data modifications.',
+      explainPlan: 'Execution Aborted: User does not possess ADMIN privileges. Log in as Admin to perform mutations.',
+      isMutation: true
+    };
+  }
 
   // If matched to a benchmark query and fallback active or DuckDB not ready
   const matchedBenchmark = BENCHMARK_QUERIES.find(
