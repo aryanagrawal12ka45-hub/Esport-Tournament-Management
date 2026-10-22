@@ -234,14 +234,15 @@ export const CommandPalette: React.FC = () => {
     <div className="fixed inset-0 z-50 overflow-hidden flex items-start justify-center pt-16 md:pt-24 px-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 backdrop-translucent transition-opacity cursor-pointer"
         onClick={() => setCommandPaletteOpen(false)}
+        aria-hidden="true"
       />
 
       {/* Palette Modal */}
-      <div className="relative w-full max-w-2xl bg-token border border-token-strong rounded-xl shadow-2xl overflow-hidden z-10">
+      <div className="relative w-full max-w-2xl bg-surface border border-strong rounded-xl shadow-2xl overflow-hidden z-10 animate-scaleUp">
         {/* Search Input */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-token bg-surface">
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-token bg-surface-2">
           <Search className="w-5 h-5 text-primary-token flex-shrink-0" />
           <input
             ref={inputRef}
@@ -255,13 +256,13 @@ export const CommandPalette: React.FC = () => {
             placeholder="Type a command, table name, or view (e.g. 'Match', 'PL/SQL', 'Simulation')..."
             className="w-full bg-transparent text-token placeholder-muted font-mono text-sm focus:outline-none"
           />
-          <kbd className="hidden sm:inline-block font-mono text-xs px-2 py-0.5 rounded bg-surface-2 border border-token text-muted">
+          <kbd className="hidden sm:inline-block font-mono text-xs px-2 py-0.5 rounded bg-surface border border-token text-muted">
             ESC
           </kbd>
         </div>
 
         {/* Results List */}
-        <div className="max-h-96 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+        <div className="max-h-96 overflow-y-auto p-2 space-y-1 custom-scrollbar bg-surface">
           {filtered.length === 0 ? (
             <div className="py-8 text-center text-xs font-mono text-muted">
               No matching commands found for "{query}".
@@ -298,7 +299,7 @@ export const CommandPalette: React.FC = () => {
         </div>
 
         {/* Palette Footer */}
-        <div className="px-4 py-2.5 border-t border-token bg-surface flex items-center justify-between text-xs font-mono text-muted">
+        <div className="px-4 py-2.5 border-t border-token bg-surface-2 flex items-center justify-between text-xs font-mono text-muted">
           <div className="flex items-center gap-4">
             <span>↑↓ Navigate</span>
             <span>↵ Select</span>

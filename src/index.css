@@ -594,6 +594,14 @@ input, select, textarea {
   animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@keyframes drawerSlide {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-drawerSlide {
+  animation: drawerSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @keyframes ping {
   75%, 100% { transform: scale(2); opacity: 0; }
 }

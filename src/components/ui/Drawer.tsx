@@ -32,16 +32,17 @@ export const Drawer: React.FC<DrawerProps> = ({
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 backdrop-translucent transition-opacity cursor-pointer"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Drawer Body */}
       <div
-        className={`relative w-full ${widthClass} h-full bg-token border-l border-token-strong shadow-2xl flex flex-col z-10 animate-[drawerSlide_0.25s_ease-out]`}
+        className={`relative w-full ${widthClass} h-full bg-surface border-l border-strong shadow-2xl flex flex-col z-10 animate-drawerSlide`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-5 border-b border-token bg-surface">
+        <div className="flex items-center justify-between p-4 md:p-5 border-b border-token bg-surface-2">
           <div className="min-w-0 pr-4">
             {title && (
               <h2 className="font-heading text-xl md:text-2xl font-black uppercase tracking-wider text-token truncate">
@@ -55,7 +56,7 @@ export const Drawer: React.FC<DrawerProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-muted hover:text-primary-token hover:bg-surface-2 rounded-lg border border-transparent hover:border-token transition-colors cursor-pointer"
+            className="p-2 text-muted hover:text-primary-token hover:bg-surface-3 rounded-lg border border-transparent hover:border-token transition-colors cursor-pointer"
             title="Close Drawer (Esc)"
           >
             <X className="w-5 h-5" />
@@ -63,7 +64,7 @@ export const Drawer: React.FC<DrawerProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">{children}</div>
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar bg-surface">{children}</div>
       </div>
     </div>
   );

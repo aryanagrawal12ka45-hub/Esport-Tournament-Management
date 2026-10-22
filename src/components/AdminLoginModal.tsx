@@ -64,14 +64,14 @@ export const AdminLoginModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-translucent animate-fadeIn cursor-pointer"
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-modal-title"
       onClick={() => setAdminModalOpen(false)}
     >
       <div
-        className="w-full max-w-md bg-surface border border-strong rounded-xl shadow-2xl overflow-hidden animate-scaleUp"
+        className="w-full max-w-md bg-surface border border-strong rounded-xl shadow-2xl overflow-hidden animate-scaleUp cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Strip */}

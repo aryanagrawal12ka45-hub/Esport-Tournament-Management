@@ -189,7 +189,7 @@ export const RecordDrawer: React.FC<RecordDrawerProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="pt-4 border-t border-token flex items-center justify-end gap-3">
+        <div className="pt-4 border-t border-token flex items-center justify-end gap-3 sticky bottom-0 bg-surface py-3 -mx-4 md:-mx-6 px-4 md:px-6 shadow-md mt-6">
           <button
             type="button"
             onClick={onClose}
