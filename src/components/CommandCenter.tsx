@@ -26,8 +26,7 @@ export const CommandCenter: React.FC = () => {
     liveMatchDetails,
     tables,
     setActiveTab,
-    setSelectedTableId,
-    isLiveSimulating
+    setSelectedTableId
   } = useDatabase();
 
   const [minRoundsFilter, setMinRoundsFilter] = useState(true);
@@ -125,9 +124,9 @@ export const CommandCenter: React.FC = () => {
           <div className="flex-1 w-full text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-2.5 mb-2">
               <StatusPill
-                label={isLiveSimulating ? 'BROADCAST LIVE' : 'FEED PAUSED'}
-                variant={isLiveSimulating ? 'live' : 'neutral'}
-                pulse={isLiveSimulating}
+                label="OFFICIAL MATCH"
+                variant="primary"
+                pulse={false}
               />
               <span className="font-mono text-xs text-primary-token uppercase tracking-wider font-bold">
                 {activeGame.GameName}

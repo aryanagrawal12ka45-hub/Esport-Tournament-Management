@@ -10,8 +10,6 @@ import {
   ShieldAlert,
   GraduationCap,
   Calculator,
-  Play,
-  Pause,
   Sun,
   Moon,
   RotateCcw,
@@ -29,8 +27,6 @@ export const CommandPalette: React.FC = () => {
     setActiveTab,
     setSelectedTableId,
     tables,
-    isLiveSimulating,
-    setIsLiveSimulating,
     theme,
     toggleTheme,
     resetDatabase,
@@ -157,13 +153,7 @@ export const CommandPalette: React.FC = () => {
       icon: isAdmin ? ShieldCheck : Lock,
       action: () => setAdminModalOpen(true)
     },
-    {
-      id: 'ctrl_sim',
-      title: isLiveSimulating ? 'Pause Telemetry Simulation' : 'Resume Telemetry Simulation',
-      category: 'System Control',
-      icon: isLiveSimulating ? Pause : Play,
-      action: () => setIsLiveSimulating((prev) => !prev)
-    },
+
     {
       id: 'ctrl_theme',
       title: theme === 'arena' ? 'Switch to Broadcast Theme (Light)' : 'Switch to Arena Theme (Dark)',

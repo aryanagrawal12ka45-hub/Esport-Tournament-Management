@@ -20,12 +20,12 @@ export const Ticker: React.FC<{ className?: string }> = ({ className = '' }) => 
 
   const items = [
     {
-      icon: <Radio className="w-3.5 h-3.5 text-danger-token animate-pulse" />,
-      text: `LIVE MATCH: ${matchLabel}`
+      icon: <Radio className="w-3.5 h-3.5 text-danger-token" />,
+      text: `TOURNAMENT MATCH: ${matchLabel}`
     },
     {
       icon: <Zap className="w-3.5 h-3.5 text-info-token" />,
-      text: `GLOBAL TELEMETRY: ${stats.liveViewers.toLocaleString()} Peak Viewers | ${stats.avgLatency}ms Avg Latency`
+      text: `GLOBAL TELEMETRY: ${stats.liveViewers.toLocaleString()} Registered Viewers | ${stats.avgLatency}ms Engine Latency`
     },
     {
       icon: <Cpu className="w-3.5 h-3.5 text-success-token" />,
@@ -43,7 +43,7 @@ export const Ticker: React.FC<{ className?: string }> = ({ className = '' }) => 
     >
       {/* Fixed label chip at left */}
       <div className="flex-shrink-0 px-3 h-full flex items-center bg-primary-soft border-r border-token text-xs font-mono tracking-wider uppercase font-bold text-primary-token z-20 shadow-sm">
-        HUD BROADCAST
+        ARENADB TOURNAMENT
       </div>
 
       {/* Marquee viewport with soft gradient fade masks on both edges */}

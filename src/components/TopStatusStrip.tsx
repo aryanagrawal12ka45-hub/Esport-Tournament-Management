@@ -29,8 +29,6 @@ export const TopStatusStrip: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
-    isLiveSimulating,
-    setIsLiveSimulating,
     duckDbStatus,
     resetDatabase,
     themeMode,
@@ -159,19 +157,6 @@ export const TopStatusStrip: React.FC = () => {
             title="Open Command Palette (Ctrl+K)"
           >
             <Search className="w-4 h-4" />
-          </button>
-
-          {/* Simulation Toggle */}
-          <button
-            onClick={() => setIsLiveSimulating((prev) => !prev)}
-            className="cursor-pointer"
-            title={isLiveSimulating ? 'Pause Telemetry Stream' : 'Resume Telemetry Stream'}
-          >
-            <StatusPill
-              label={isLiveSimulating ? 'LIVE SYNC' : 'PAUSED'}
-              variant={isLiveSimulating ? 'live' : 'neutral'}
-              pulse={isLiveSimulating}
-            />
           </button>
 
           {/* Reset DB */}

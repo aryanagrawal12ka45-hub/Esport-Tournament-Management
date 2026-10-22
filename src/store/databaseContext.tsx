@@ -3,7 +3,7 @@ import type { DatabaseTable, TableRelation } from '../data/schema';
 import { INITIAL_RELATIONS } from '../data/schema';
 import { INITIAL_TABLES, getInitialTableData } from '../data/seed';
 import { initDuckDB, subscribeDuckDbStatus, syncTablesToDuckDB, subscribeDuckDbMutation, type DuckDBStatus } from '../duckdb';
-import { stepLiveSimulation, getSimulationStats, getActiveLiveMatch, type SimulationStats } from '../engine/liveMatch';
+import { getSimulationStats, getActiveLiveMatch, type SimulationStats } from '../engine/liveMatch';
 import { calculateACS, calculateADR, calculateImpactIndex } from '../engine/scoring';
 
 export type AppTabId =
@@ -111,7 +111,7 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [selectedTableId, setSelectedTableId] = useState<string>('MATCH');
   const [selectedBenchmarkId, setSelectedBenchmarkId] = useState<string>('q01');
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
-  const [isLiveSimulating, setIsLiveSimulating] = useState<boolean>(true);
+  const [isLiveSimulating, setIsLiveSimulating] = useState<boolean>(false);
   const [duckDbStatus, setDuckDbStatus] = useState<DuckDBStatus>('uninitialized');
   const [tableData, setTableData] = useState<Record<string, any[]>>(() => loadPersistedTableData());
   const [tables] = useState<DatabaseTable[]>(INITIAL_TABLES);
@@ -283,16 +283,6 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   }, [tableData]);
 
-  // Live simulation tick interval
-  useEffect(() => {
-    if (!isLiveSimulating) return;
-
-    const interval = setInterval(() => {
-      setTableData((prev) => stepLiveSimulation(prev));
-    }, 2800);
-
-    return () => clearInterval(interval);
-  }, [isLiveSimulating]);
 
   // Global Keyboard Shortcuts (Ctrl+K or Cmd+K for Command Palette)
   useEffect(() => {

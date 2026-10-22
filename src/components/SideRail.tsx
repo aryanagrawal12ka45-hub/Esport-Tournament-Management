@@ -44,8 +44,6 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
     setThemeMode,
     cycleTheme,
     resolvedTheme,
-    isLiveSimulating,
-    setIsLiveSimulating,
     setCommandPaletteOpen,
     stats,
     tables,
@@ -64,8 +62,8 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
       label: 'Command Center',
       shortLabel: 'Hub',
       icon: LayoutDashboard,
-      badge: isLiveSimulating ? 'LIVE' : null,
-      isLive: isLiveSimulating
+      badge: null,
+      isLive: false
     },
     {
       id: ROUTES.bracket,
@@ -544,111 +542,7 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
           className="p-3 space-y-2 border-t"
           style={{ borderColor: 'var(--sb-divider)' }}
         >
-          {/* Simulation Status Card */}
-          {collapsed ? (
-            <div className="relative flex justify-center group">
-              <button
-                type="button"
-                onClick={() => setIsLiveSimulating((prev) => !prev)}
-                className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all cursor-pointer sb-focus-visible"
-                style={
-                  isLiveSimulating
-                    ? {
-                        backgroundColor: 'var(--sb-sim-active-bg)',
-                        color: 'var(--sb-sim-active-text)',
-                        border: '1px solid var(--sb-sim-active-border)'
-                      }
-                    : {
-                        backgroundColor: 'var(--sb-sim-paused-bg)',
-                        color: 'var(--sb-sim-paused-text)',
-                        border: '1px solid var(--sb-sim-paused-border)'
-                      }
-                }
-                title={
-                  isLiveSimulating
-                    ? 'Simulation: ACTIVE (Click to pause)'
-                    : 'Simulation: PAUSED (Click to resume)'
-                }
-                aria-label={
-                  isLiveSimulating ? 'Simulation: ACTIVE' : 'Simulation: PAUSED'
-                }
-              >
-                <span
-                  className={`w-2.5 h-2.5 rounded-full ${
-                    isLiveSimulating ? 'sb-pulse-dot' : ''
-                  }`}
-                  style={{
-                    backgroundColor: isLiveSimulating
-                      ? 'var(--sb-sim-active-text)'
-                      : 'var(--sb-sim-paused-text)'
-                  }}
-                />
-              </button>
-              <div
-                className="hidden group-hover:flex group-focus-within:flex absolute left-full ml-3 px-2.5 py-1 rounded-[6px] text-xs font-mono font-medium shadow-2xl pointer-events-none whitespace-nowrap z-50 items-center gap-1.5"
-                style={{
-                  background: 'var(--sb-bg)',
-                  color: 'var(--sb-text)',
-                  border: '1px solid var(--sb-border)',
-                  boxShadow: 'var(--sb-shadow)'
-                }}
-              >
-                <span>
-                  {isLiveSimulating
-                    ? 'Simulation: ACTIVE'
-                    : 'Simulation: PAUSED'}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setIsLiveSimulating((prev) => !prev)}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-xs font-mono font-bold transition-all cursor-pointer sb-focus-visible shadow-sm"
-              style={
-                isLiveSimulating
-                  ? {
-                      backgroundColor: 'var(--sb-sim-active-bg)',
-                      color: 'var(--sb-sim-active-text)',
-                      border: '1px solid var(--sb-sim-active-border)'
-                    }
-                  : {
-                      backgroundColor: 'var(--sb-sim-paused-bg)',
-                      color: 'var(--sb-sim-paused-text)',
-                      border: '1px solid var(--sb-sim-paused-border)'
-                    }
-              }
-              title={
-                isLiveSimulating
-                  ? 'Pause Match Telemetry Simulation'
-                  : 'Resume Match Telemetry Simulation'
-              }
-            >
-              <span
-                className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                  isLiveSimulating ? 'sb-pulse-dot' : ''
-                }`}
-                style={{
-                  backgroundColor: isLiveSimulating
-                    ? 'var(--sb-sim-active-text)'
-                    : 'var(--sb-sim-paused-text)'
-                }}
-              />
-              <span className="truncate flex-1 text-left">
-                {isLiveSimulating ? 'Simulation: ACTIVE' : 'Simulation: PAUSED'}
-              </span>
-              <span
-                className="text-[10px] font-normal font-mono opacity-80"
-                style={{
-                  color: isLiveSimulating
-                    ? 'var(--sb-sim-active-text)'
-                    : 'var(--sb-sim-paused-text)'
-                }}
-              >
-                {isLiveSimulating ? 'LIVE' : 'PAUSED'}
-              </span>
-            </button>
-          )}
+
 
           {/* Theme Control: Segmented (Expanded) or Icon (Collapsed) */}
           {collapsed ? (
@@ -956,50 +850,7 @@ export const SideRail: React.FC<SideRailProps> = ({ collapsed, onToggleCollapse 
               className="p-3 space-y-2 border-t flex-shrink-0"
               style={{ borderColor: 'var(--sb-divider)' }}
             >
-              <button
-                type="button"
-                onClick={() => setIsLiveSimulating((prev) => !prev)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-xs font-mono font-bold transition-all cursor-pointer sb-focus-visible shadow-sm"
-                style={
-                  isLiveSimulating
-                    ? {
-                        backgroundColor: 'var(--sb-sim-active-bg)',
-                        color: 'var(--sb-sim-active-text)',
-                        border: '1px solid var(--sb-sim-active-border)'
-                      }
-                    : {
-                        backgroundColor: 'var(--sb-sim-paused-bg)',
-                        color: 'var(--sb-sim-paused-text)',
-                        border: '1px solid var(--sb-sim-paused-border)'
-                      }
-                }
-              >
-                <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    isLiveSimulating ? 'sb-pulse-dot' : ''
-                  }`}
-                  style={{
-                    backgroundColor: isLiveSimulating
-                      ? 'var(--sb-sim-active-text)'
-                      : 'var(--sb-sim-paused-text)'
-                  }}
-                />
-                <span className="truncate flex-1 text-left">
-                  {isLiveSimulating
-                    ? 'Simulation: ACTIVE'
-                    : 'Simulation: PAUSED'}
-                </span>
-                <span
-                  className="text-[10px] font-normal font-mono opacity-80"
-                  style={{
-                    color: isLiveSimulating
-                      ? 'var(--sb-sim-active-text)'
-                      : 'var(--sb-sim-paused-text)'
-                  }}
-                >
-                  {isLiveSimulating ? 'LIVE' : 'PAUSED'}
-                </span>
-              </button>
+
 
               <div
                 className="grid grid-cols-3 gap-1 p-1 rounded-[8px]"
