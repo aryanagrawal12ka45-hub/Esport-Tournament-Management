@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#000000" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1.5"/>
-  <path d="M17.5 4L8 16.5H15L14.5 28L24 15.5H17L17.5 4Z" fill="#f4f4f5" stroke="#10b981" stroke-width="1.2" stroke-linejoin="round"/>
+  <rect width="32" height="32" rx="6" fill="#070B14" stroke="#22D3EE" stroke-width="1.5"/>
+  <!-- ArenaDB Cyber Trophy / Database Vault Emblem -->
+  <path d="M10 8H22V13C22 16.3137 19.3137 19 16 19C12.6863 19 10 16.3137 10 13V8Z" fill="rgba(34, 211, 238, 0.15)" stroke="#22D3EE" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M7 10H10V13C10 14.5 8.5 15 7 15V10Z" stroke="#E879F9" stroke-width="1.2"/>
+  <path d="M25 10H22V13C22 14.5 23.5 15 25 15V10Z" stroke="#E879F9" stroke-width="1.2"/>
+  <path d="M16 19V23M12 24H20" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="16" cy="13" r="1.5" fill="#22D3EE"/>
 </svg>

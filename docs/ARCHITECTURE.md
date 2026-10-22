@@ -1,10 +1,10 @@
-# Technical Architecture and Design System
+# ArenaDB Technical Architecture and System Design
 
-This document outlines the software engineering architecture, state management patterns, and graphic visualization engine powering the **Renewable Energy DB Simulator**.
+This document details the software architecture, DuckDB-Wasm integration, state synchronization mechanics, reactive live telemetry tick engine, and procedural execution subsystem powering **ArenaDB: Tournament Operations Database Lab**.
 
 ---
 
-## System Architecture Overview
+## 1. System Architecture Overview
 
 ```
                                   +------------------------------------+
@@ -16,93 +16,81 @@ This document outlines the software engineering architecture, state management p
                       |                             |                             |
                       v                             v                             v
             +-------------------+         +-------------------+         +-------------------+
-            |  Interactive ERD  |         |   Table Manager   |         |   Query Console   |
-            |   Canvas Engine   |         |    (Full CRUD)    |         |    (OLAP SQL)     |
+            |    Schema Map     |         |    Data Vault     |         |     Query Lab     |
+            | (Orthogonal ERD)  |         | (3-Pane Explorer) |         |   (DuckDB-Wasm)   |
+            +---------+---------+         +---------+---------+         +---------+---------+
+                      |                             |                             |
+            +---------+---------+         +---------+---------+         +---------+---------+
+            |  Command Center   |         |    PL/SQL Lab     |         |  Integrity Desk   |
+            | (Scoreboard/Bento)|         | (Oracle 19c Engine|         |  (Kanban Board)   |
             +---------+---------+         +---------+---------+         +---------+---------+
                       |                             |                             |
                       +-----------------------------+-----------------------------+
                                                     |
                                                     v
                                   +------------------------------------+
-                                  |  In-Memory Relational State Layer  |
-                                  |    (Live Records, Relations, PK)   |
-                                  +-----------------+------------------+
-                                                    ^
-                                                    |
-                                  +-----------------+------------------+
-                                  |  Simulated IoT Telemetry Loop     |
-                                  |  (2.8s Event Tick, Window Slicing)|
-                                  +------------------------------------+
+                                  |      DatabaseContext Store         |
+                                  |   (Relational Cache & Cascades)    |
+                                  +--------+------------------+--------+
+                                           |                  |
+                                           v                  v
+                      +--------------------+---+          +---+--------------------+
+                      |   DuckDB-Wasm Engine   |          |  Live Match Tick Loop  |
+                      | (Client Columnar OLAP) |          | (2.8s Simulation Tick) |
+                      +------------------------+          +------------------------+
 ```
 
 ---
 
-## In-Memory Relational Engine and Live Telemetry
+## 2. DuckDB-Wasm In-Memory Analytics Engine
 
-### Reactive State Model
-The simulator implements an in-memory transactional database engine directly in React state (`App.tsx`):
-- **Table Registry**: Master dictionary storing dynamic record arrays keyed by `TableID`:
-  ```typescript
-  const [tableData, setTableData] = useState<Record<string, any[]>>(() => {
-    const map: Record<string, any[]> = {};
-    INITIAL_TABLES.forEach((t) => {
-      map[t.id] = [...t.initialRows];
-    });
-    return map;
-  });
-  ```
-- **Referential Integrity Enforcement**: When inserting rows via `RecordModal.tsx`, foreign-key constraints are checked against parent tables in real time.
-- **Dynamic Slicing**: Telemetry tables retain the latest 24 active intervals using rolling FIFO sliding windows to maintain performance and low memory footprints.
+ArenaDB incorporates **DuckDB-Wasm** (`@duckdb/duckdb-wasm`) client-side to execute real-time columnar analytical SQL in the browser:
 
-### Asynchronous IoT Streaming Engine
-A dedicated tick worker (`useEffect` in `App.tsx`) simulates live microgrid telemetry:
-1. **Generation Production Tick**: Generates realistic fluctuating power outputs for Photovoltaic Arrays and Wind Turbines (420 to 505 kWh) and microgrid frequency oscillations (49.95 to 50.05 Hz).
-2. **Environmental Conditions Tick**: Modulates ambient solar irradiance (920 to 1040 W/m2), ambient temperature, and wind speed.
-3. **BESS Thermodynamic Update**: Simulates realistic battery State of Charge (SoC) drift and cycle increments.
+1. **WebAssembly Initialization**:
+   - Asynchronously loads DuckDB WebAssembly workers and module bundles (`duckdb-browser-mvp.worker.js` / `duckdb-mvp.wasm`) using jsDelivr CDN fallback.
+   - Provides non-blocking execution with dedicated worker threads.
+2. **Dynamic Ingestion**:
+   - In-memory relational tables are serialized and registered into DuckDB via `registerFileText()` and `read_json_auto()`.
+   - Hashes and syncs only when database state mutates, preventing redundant serialization overhead.
+3. **Execution Profiling (`EXPLAIN`)**:
+   - Executes user and benchmark SQL queries against DuckDB columnar memory.
+   - Retrieves Arrow record batches and generates query execution plans breaking down scan operators and hash joins.
+4. **Relay Fallback**:
+   - Automatically falls back to in-memory relational relay if WebAssembly workers or Web Workers are restricted by browser policy.
 
 ---
 
-## Interactive ERD Canvas and Math Engine
+## 3. Centralized Store & Referential Integrity
 
-The `DatabaseSchemaCanvas.tsx` component renders an interactive infinite canvas with dynamic entity tables and vector relationship lines.
+All operational database state is managed through `src/store/databaseContext.tsx`:
 
-### 1. Vectorized SVG Bezier Curves
-Relationships between tables are rendered dynamically as cubic Bezier SVG paths:
-```
-B(t) = (1-t)^3 * P0 + 3*(1-t)^2 * t * P1 + 3*(1-t) * t^2 * P2 + t^3 * P3
-```
-- **Connection Anchors**: Automatically calculate the closest geometric face (left/right/top/bottom) between source and target cards to prevent messy overlapping lines.
-- **Directional Gradients**: Foreign key vectors are rendered with animated metallic silver or amber SVG gradients indicating data flow direction.
-- **Active Cardinality Badges**: Hovering or clicking on a relation or table card highlights interconnected foreign keys with glowing borders.
-
-### 2. Multi-Touch Gestures and Pan/Zoom
-- **Desktop**: Mouse drag panning with smooth inertial dampening; mouse-wheel zooming centered around cursor coordinates.
-- **Mobile Touch**: Full two-finger multi-touch pinch-to-zoom calculation with distance delta tracking.
-- **Viewport Constraints**: Clamps zoom factors between 0.25x and 2.0x with single-click `Reset View` and `Center Canvas` controls.
+* **Normalized Table Data**: Keyed table records map matching schema definitions in `src/data/schema.ts`.
+* **Foreign Key Cascade Protection**: Deletion transactions scan `INITIAL_RELATIONS`. If dependent child records exist, deletion is halted with an explicit integrity violation notice.
+* **Primary Key Uniqueness**: Validates new inserts to guarantee absence of primary key collisions.
 
 ---
 
-## Design System and Aesthetic Principles
+## 4. Live Match Simulation Engine (`src/engine/liveMatch.ts`)
 
-The application adheres to an **ultra-dark, metallic wafer and brushed steel design philosophy**:
+A pure functional tick engine running on a 2.8-second cycle:
 
-### Design System Tokens
-- **Background Palette**: Pure Obsidian Black (`#000000`, `#08080a`, `#0e0e12`) avoiding muddy grays or saturated neon purple themes.
-- **Metallic Accents**: Silver wafer chrome borders (`rgba(255, 255, 255, 0.12)` to `rgba(255, 255, 255, 0.28)`).
-- **Subsystem Palette**:
-  - `Assets`: Brushed Steel White (`#f4f4f5`)
-  - `Telemetry`: Industrial Zinc (`#d4d4d8`)
-  - `Storage`: Solar Amber (`#fbbf24`)
-  - `Grid`: High-Voltage Slate (`#94a3b8`)
-  - `Compliance`: Emerald Green (`#34d399`)
-- **Typography**: Clean monospace fonts (`JetBrains Mono`, `SF Mono`, `Fira Code`) for tables, timestamps, and keys; modern system display geometry for headers.
-- **Glassmorphism**: Fine-grain backdrop filters (`backdrop-filter: blur(12px)`) with hairline specular highlights.
+1. **Active Match Progression**: Randomly assigns round victories between participating teams. First team reaching 13 rounds triggers match victory, status transition to `Completed`, and schedule advancement.
+2. **Combat Telemetry & Latency Jitter**: Jitters player ping between 9–32ms with occasional network burst spikes up to 148ms, incrementing kills, assists, and deaths while updating composite combat scores.
+3. **Autonomous Anti-Cheat Surveillance**: Detects abnormal latency bursts or statistical jumps to file `Under Review` cases in `ANTI_CHEAT`.
+4. **Broadcast Viewership Drift**: Computes random-walk concurrent viewer adjustments across streaming platforms.
 
 ---
 
-## Responsive and Mobile-First Architecture
+## 5. Visual Identity & Design System
 
-The application provides a responsive experience across all viewports (from 320px mobile screens to 4K ultra-wide monitors):
-- **Bottom Navigation Bar**: Mobile devices display an ergonomic bottom tab bar with tactile touch feedback.
-- **Drawer and Canvas Controls**: Floating canvas toolbars reposition and minimize gracefully on narrow screens.
-- **Table Virtualization and Horizontal Scroll**: Data grids preserve column alignment with sticky primary key indicators and horizontal touch gliding.
+ArenaDB implements an **Arena Neon HUD** visual identity:
+* **Color Palette**: Void Navy (`#070B14`), Neon Cyan (`#22D3EE`), Cyber Magenta (`#E879F9`), Radiant Amber (`#FBBF24`), Tactical Emerald (`#10B981`).
+* **Angular Aesthetics**: Diagonal clipped corners (`clip-corner-tl-br`, `clip-corner-all`), cyber scanline overlays, and neon glow accents.
+* **Dual Theme Engine**: Native support for **Arena Dark** and **Broadcast Light** themes via `data-theme` attribute.
+* **Global Navigation**: Collapsible left `SideRail`, persistent `TopStatusStrip` broadcast marquee, and `Ctrl+K` `CommandPalette`.
+
+---
+
+## 6. Attribution
+
+Originally scaffolded from [`rudy-07/Renewable-Energy-Simulator`](https://github.com/rudy-07/Renewable-Energy-Simulator) under the MIT License. Substantially modified and redesigned into ArenaDB.

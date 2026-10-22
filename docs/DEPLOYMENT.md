@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide provides instructions for deploying the **Renewable Energy DB Simulator** to production environments, static hosts, and containerized cloud providers.
+This guide provides instructions for deploying the **Global E-Sports Tournament Management Database Simulator** to production environments, static hosts, and containerized cloud providers.
 
 ---
 
@@ -39,7 +39,7 @@ npx vercel
 #### Via GitHub Integration:
 1. Push your repository to GitHub.
 2. Go to [Vercel Dashboard](https://vercel.com/dashboard) and click **"Add New Project"**.
-3. Import `Renewable-Energy-Simulator`.
+3. Import `esports-database-simulator`.
 4. Ensure the build configuration is:
    - **Framework Preset**: Vite
    - **Build Command**: `npm run build`
@@ -60,85 +60,20 @@ A `public/_redirects` file is included in this repository to support single-page
 npx netlify-cli deploy --prod --dir=dist
 ```
 
-#### Via Netlify Web Interface:
-1. Connect your GitHub repository.
-2. Set **Build command**: `npm run build`
-3. Set **Publish directory**: `dist`
-4. Click **Deploy Site**.
+#### Via Netlify UI:
+1. Connect your repository on [Netlify](https://app.netlify.com/).
+2. Set Build command to `npm run build`.
+3. Set Publish directory to `dist`.
+4. Deploy site.
 
 ---
 
-### 3. GitHub Pages
+### 3. Docker Deployment
 
-To host on GitHub Pages:
-
-1. In `vite.config.ts`, add the base repository path if hosted on a sub-path:
-   ```typescript
-   export default defineConfig({
-     base: '/Renewable-Energy-Simulator/',
-     plugins: [react()],
-   });
-   ```
-2. Build and deploy using `gh-pages`:
-   ```bash
-   npm install -D gh-pages
-   npx gh-pages -d dist
-   ```
-
-Alternatively, use a GitHub Actions workflow `.github/workflows/deploy.yml`:
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
-
-jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-```
-
----
-
-### 4. Containerized Docker Deployment
-
-For self-hosted Kubernetes, AWS ECS, or DigitalOcean Droplets, a lightweight multi-stage Docker build with Nginx is recommended:
+A lightweight multi-stage Dockerfile can be used to containerize the application using NGINX Alpine:
 
 ```dockerfile
-# Stage 1: Build production bundle
+# Stage 1: Build application
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
@@ -146,7 +81,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve via Nginx Alpine
+# Stage 2: Serve with NGINX
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -154,15 +89,15 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-#### Companion `nginx.conf`:
+#### NGINX Configuration (`nginx.conf`):
 ```nginx
 server {
     listen 80;
     server_name localhost;
-    root /usr/share/nginx/html;
-    index index.html;
 
     location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
         try_files $uri $uri/ /index.html;
     }
 
@@ -171,9 +106,17 @@ server {
 }
 ```
 
-Run container:
+#### Build and Run Docker Container:
 ```bash
-docker build -t renewable-energy-simulator .
-docker run -d -p 8080:80 renewable-energy-simulator
+docker build -t esports-database-simulator .
+docker run -p 8080:80 esports-database-simulator
 ```
-Open `http://localhost:8080` in your browser.
+Access the application at `http://localhost:8080`.
+
+---
+
+## Performance Optimization Checklist
+
+* [x] **Vite Rolldown & Production Tree-Shaking**: Dead code paths stripped during compilation.
+* [x] **Responsive Asset Delivery**: SVG vector icons and lightweight modern font declarations.
+* [x] **Client-Side In-Memory Execution**: Zero server round-trips for schema browsing, queries, and PL/SQL blocks.

@@ -1,411 +1,214 @@
-# Database Schema and Relational Architecture Specification
+# Global E-Sports Tournament Management Database Schema
 
-The **Renewable Energy DB Simulator** models a multi-facility renewable energy microgrid and utility distribution network. The architecture bridges operational enterprise asset management (EAM), high-frequency Internet of Things (IoT) sensor telemetry, Battery Energy Storage Systems (BESS), utility power purchase agreements (PPA), and statutory environmental compliance.
+Comprehensive data dictionary, entity-relationship specifications, and relational normalization analysis for the 24-table e-sports tournament management database simulator.
 
 ---
 
-## Relational Entity-Relationship Diagram (ERD)
-
-The diagram below specifies all 15 relational tables, their primary keys (PK), foreign keys (FK), column attributes, and relational cardinalities across the microgrid:
+## 1. Entity-Relationship Diagram (Mermaid ERD)
 
 ```mermaid
 erDiagram
-    POWER_FACILITY {
-        VARCHAR_10 FacilityID PK
-        VARCHAR_100 FacilityName
-        VARCHAR_30 FacilityType
-        VARCHAR_50 Region
-        DECIMAL TotalCapacityMW
-        DATE CommissionDate
-        DECIMAL Latitude
-        DECIMAL Longitude
-    }
-
-    GENERATION_UNIT {
-        VARCHAR_10 UnitID PK
-        VARCHAR_10 FacilityID FK
-        VARCHAR_50 UnitType
-        DECIMAL RatedCapacityKW
-        VARCHAR_20 OperationalStatus
-        DATE CommissionDate
-    }
-
-    ENVIRONMENTAL_TELEMETRY {
-        VARCHAR_10 EnvLogID PK
-        VARCHAR_10 FacilityID FK
-        TIMESTAMP LogTimestamp
-        DECIMAL SolarIrradiance
-        DECIMAL WindSpeed
-        DECIMAL WaterFlowRate
-        DECIMAL Temperature
-        DECIMAL HumidityPct
-    }
-
-    ENERGY_PRODUCTION_TIMESERIES {
-        VARCHAR_10 ProductionID PK
-        VARCHAR_10 UnitID FK
-        TIMESTAMP ProductionTimestamp
-        DECIMAL EnergyGeneratedKWh
-        DECIMAL GridFrequencyHz
-        DECIMAL CapacityFactorPct
-    }
-
-    IOT_SENSOR_REGISTRY {
-        VARCHAR_10 SensorID PK
-        VARCHAR_10 UnitID FK
-        VARCHAR_50 SensorCategory
-        VARCHAR_50 ModelNumber
-        INTEGER SamplingIntervalSec
-        VARCHAR_20 Status
-    }
-
-    IOT_TELEMETRY_LOG {
-        VARCHAR_10 TelemetryID PK
-        VARCHAR_10 SensorID FK
-        TIMESTAMP ReadingTimestamp
-        STRUCT MetricPayload
-        VARCHAR_ARRAY DiagnosticFlags
-        DECIMAL BatterySoCPct
-    }
-
-    BATTERY_STORAGE_TELEMETRY {
-        VARCHAR_10 BESSLogID PK
-        VARCHAR_10 FacilityID FK
-        TIMESTAMP LogTimestamp
-        DECIMAL StateOfChargePct
-        DECIMAL CellTemperatureC
-        DECIMAL ChargeDischargeRateKW
-        INTEGER CycleCount
-    }
-
-    MAINTENANCE_ENGINEER {
-        VARCHAR_10 EngineerID PK
-        VARCHAR_50 FirstName
-        VARCHAR_50 LastName
-        VARCHAR_50 Specialization
-        VARCHAR_40 CertificationLevel
-    }
-
-    EQUIPMENT_MAINTENANCE_LOG {
-        VARCHAR_10 MaintenanceID PK
-        VARCHAR_10 UnitID FK
-        VARCHAR_10 EngineerID FK
-        DATE MaintenanceDate
-        VARCHAR_255 ActionTaken
-        DECIMAL DowntimeHours
-        DECIMAL MaintenanceCost
-        VARCHAR_100 ComponentReplaced
-    }
-
-    DISTRIBUTION_COMPANY {
-        VARCHAR_10 CompanyID PK
-        VARCHAR_100 CompanyName
-        VARCHAR_50 LicenseNumber
-        VARCHAR_100 ContactEmail
-        VARCHAR_50 GridRegion
-    }
-
-    SUPPLY_AGREEMENT {
-        VARCHAR_10 AgreementID PK
-        VARCHAR_10 FacilityID FK
-        VARCHAR_10 CompanyID FK
-        DATE StartDate
-        DATE EndDate
-        DECIMAL ContractedCapacityMW
-        DECIMAL TariffPerKWh
-        VARCHAR_20 AgreementStatus
-    }
-
-    ELECTRICITY_DISTRIBUTION {
-        VARCHAR_10 DistributionID PK
-        VARCHAR_10 AgreementID FK
-        TIMESTAMP DispatchTimestamp
-        DECIMAL EnergySuppliedMWh
-        DECIMAL TransmissionLossPct
-    }
-
-    REGULATORY_AGENCY {
-        VARCHAR_10 AgencyID PK
-        VARCHAR_100 AgencyName
-        VARCHAR_50 Jurisdiction
-    }
-
-    COMPLIANCE_INSPECTION {
-        VARCHAR_10 InspectionID PK
-        VARCHAR_10 FacilityID FK
-        VARCHAR_10 AgencyID FK
-        DATE InspectionDate
-        VARCHAR_30 ComplianceStatus
-        DECIMAL AuditScore
-        VARCHAR_255 Notes
-    }
-
-    CARBON_CREDIT_LEDGER {
-        VARCHAR_10 CreditID PK
-        VARCHAR_10 FacilityID FK
-        DATE IssuanceDate
-        INTEGER CreditsIssued
-        DECIMAL CO2OffsetTons
-        VARCHAR_50 Standard
-        DECIMAL MarketValueUSD
-    }
-
-    POWER_FACILITY ||--o{ GENERATION_UNIT : "houses"
-    POWER_FACILITY ||--o{ ENVIRONMENTAL_TELEMETRY : "records"
-    POWER_FACILITY ||--o{ BATTERY_STORAGE_TELEMETRY : "monitors"
-    POWER_FACILITY ||--o{ SUPPLY_AGREEMENT : "supplies"
-    POWER_FACILITY ||--o{ COMPLIANCE_INSPECTION : "subject_to"
-    POWER_FACILITY ||--o{ CARBON_CREDIT_LEDGER : "issues"
-
-    GENERATION_UNIT ||--o{ ENERGY_PRODUCTION_TIMESERIES : "produces"
-    GENERATION_UNIT ||--o{ IOT_SENSOR_REGISTRY : "fitted_with"
-    GENERATION_UNIT ||--o{ EQUIPMENT_MAINTENANCE_LOG : "serviced_in"
-
-    IOT_SENSOR_REGISTRY ||--o{ IOT_TELEMETRY_LOG : "streams"
-
-    MAINTENANCE_ENGINEER ||--o{ EQUIPMENT_MAINTENANCE_LOG : "conducts"
-
-    DISTRIBUTION_COMPANY ||--o{ SUPPLY_AGREEMENT : "signs"
-    SUPPLY_AGREEMENT ||--o{ ELECTRICITY_DISTRIBUTION : "settles"
-
-    REGULATORY_AGENCY ||--o{ COMPLIANCE_INSPECTION : "oversees"
+    ADMINISTRATOR ||--o{ TOURNAMENT : "manages"
+    TOURNAMENT ||--o{ TOURNAMENT_STAGE : "hosts"
+    TOURNAMENT ||--o{ PRIZE_POOL : "funds"
+    TOURNAMENT ||--o{ FINANCIAL_RECORD : "records"
+    TOURNAMENT ||--o{ TOURNAMENT_SPONSOR : "partnered"
+    TOURNAMENT ||--o{ TOURNAMENT_RANKING : "ranks"
+    TOURNAMENT ||--o{ AWARD : "presents"
+    GAME ||--o{ MATCH : "rules"
+    TOURNAMENT_STAGE ||--o{ MATCH : "schedules"
+    REFEREE ||--o{ MATCH : "referees"
+    MATCH ||--o{ TEAM_MATCH_PARTICIPATION : "teams"
+    MATCH ||--o{ PLAYER_PERFORMANCE : "telemetry"
+    MATCH ||--o{ ANTI_CHEAT : "monitors"
+    MATCH ||--o{ MATCH_STREAM : "streams"
+    MATCH ||--o{ VOTE : "polls"
+    MATCH ||--o{ DISCIPLINARY_ACTION : "infractions"
+    TEAM ||--o{ PLAYER : "roster"
+    TEAM ||--o{ TEAM_STAFF : "staffs"
+    TEAM ||--o{ TEAM_MATCH_PARTICIPATION : "competes"
+    TEAM ||--o{ TOURNAMENT_RANKING : "placed"
+    TEAM ||--o{ DISCIPLINARY_ACTION : "penalties"
+    PLAYER ||--o{ PLAYER_PERFORMANCE : "actions"
+    PLAYER ||--o{ ANTI_CHEAT : "audits"
+    PLAYER ||--o{ DISCIPLINARY_ACTION : "sanctions"
+    PLAYER ||--o{ AWARD : "wins"
+    EQUIPMENT ||--o{ PLAYER_PERFORMANCE : "uses"
+    SPONSOR ||--o{ TOURNAMENT_SPONSOR : "sponsors"
+    STREAMING_PLATFORM ||--o{ MATCH_STREAM : "hosts"
+    AUDIENCE ||--o{ VOTE : "casts"
 ```
 
 ---
 
-## Subsystem Organization
+## 2. Subsystem Data Dictionaries
 
-The schema comprises **15 normalized relational tables** structured across **5 specialized operational subsystems**:
+### Subsystem 1: Organization & Roster Architecture
 
-| Subsystem | Color Identifier | Primary Responsibility | Tables Included |
-| :--- | :--- | :--- | :--- |
-| **Assets** | Metallic Silver | Physical microgrid infrastructure and personnel | `POWER_FACILITY`, `GENERATION_UNIT`, `MAINTENANCE_ENGINEER`, `EQUIPMENT_MAINTENANCE_LOG` |
-| **Telemetry** | Zinc Steel | Streaming SCADA logs and high-frequency time-series | `ENVIRONMENTAL_TELEMETRY`, `ENERGY_PRODUCTION_TIMESERIES`, `IOT_SENSOR_REGISTRY`, `IOT_TELEMETRY_LOG` |
-| **Storage** | Amber Gold | Electrochemical BESS telemetry and cycle life | `BATTERY_STORAGE_TELEMETRY` |
-| **Grid** | Slate Gray | Utility PPAs, transmission dispatches, and losses | `DISTRIBUTION_COMPANY`, `SUPPLY_AGREEMENT`, `ELECTRICITY_DISTRIBUTION` |
-| **Compliance** | Emerald Green | Statutory audits, emissions offsets, and ESG ledger | `REGULATORY_AGENCY`, `COMPLIANCE_INSPECTION`, `CARBON_CREDIT_LEDGER` |
+#### `TOURNAMENT`
+Stores premier championship events, LAN majors, and circuit seasons.
+* **Oracle Types**: `TournamentID VARCHAR2(10) PK`, `TournamentName VARCHAR2(100) NOT NULL`, `StartDate DATE NOT NULL`, `EndDate DATE NOT NULL`, `Location VARCHAR2(100)`, `TournamentType VARCHAR2(50)`, `AdminID VARCHAR2(10) FK -> ADMINISTRATOR(AdminID)`
+* **PostgreSQL Types**: `tournament_id VARCHAR(10) PRIMARY KEY`, `tournament_name VARCHAR(100) NOT NULL`, `start_date DATE NOT NULL`, `end_date DATE NOT NULL`, `location VARCHAR(100)`, `tournament_type VARCHAR(50)`, `admin_id VARCHAR(10) REFERENCES administrator(admin_id)`
 
----
+#### `GAME`
+Competitive esports game titles officiated in the tournaments.
+* **Oracle Types**: `GameID VARCHAR2(10) PK`, `GameName VARCHAR2(100) NOT NULL`, `Genre VARCHAR2(50)`, `Publisher VARCHAR2(100)`
+* **PostgreSQL Types**: `game_id VARCHAR(10) PRIMARY KEY`, `game_name VARCHAR(100) NOT NULL`, `genre VARCHAR(50)`, `publisher VARCHAR(100)`
 
-## Comprehensive Data Dictionaries
+#### `TOURNAMENT_STAGE`
+Sequential bracket phases within a tournament (Group Stage, Knockouts, Semifinals, Grand Final).
+* **Oracle Types**: `StageID VARCHAR2(10) PK`, `StageName VARCHAR2(100) NOT NULL`, `StageType VARCHAR2(50) [League|Knockout|Semifinal|Final]`, `StartDate DATE`, `EndDate DATE`, `TournamentID VARCHAR2(10) FK -> TOURNAMENT(TournamentID)`
+* **PostgreSQL Types**: `stage_id VARCHAR(10) PRIMARY KEY`, `stage_name VARCHAR(100) NOT NULL`, `stage_type VARCHAR(50)`, `start_date DATE`, `end_date DATE`, `tournament_id VARCHAR(10) REFERENCES tournament(tournament_id)`
 
-### 1. Subsystem: Assets
+#### `TEAM`
+Competitive professional esports franchises and organizations.
+* **Oracle Types**: `TeamID VARCHAR2(10) PK`, `TeamName VARCHAR2(100) NOT NULL`, `Country VARCHAR2(50)`, `Ranking NUMBER(4)`
+* **PostgreSQL Types**: `team_id VARCHAR(10) PRIMARY KEY`, `team_name VARCHAR(100) NOT NULL`, `country VARCHAR(50)`, `ranking INTEGER`
 
-#### `POWER_FACILITY`
-Master registry of renewable energy generating complexes, regional distribution hubs, and storage facilities.
+#### `PLAYER`
+Professional athletes contracted to teams with defined tactical roles.
+* **Oracle Types**: `PlayerID VARCHAR2(10) PK`, `PlayerName VARCHAR2(100) NOT NULL`, `Country VARCHAR2(50)`, `TeamID VARCHAR2(10) FK -> TEAM(TeamID)`, `PlayerRole VARCHAR2(50)`, `IsSubstitute NUMBER(1) DEFAULT 0`
+* **PostgreSQL Types**: `player_id VARCHAR(10) PRIMARY KEY`, `player_name VARCHAR(100) NOT NULL`, `country VARCHAR(50)`, `team_id VARCHAR(10) REFERENCES team(team_id)`, `player_role VARCHAR(50)`, `is_substitute SMALLINT DEFAULT 0`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `FacilityID` | `VARCHAR(10)` | **PRIMARY KEY** | Unique facility identification code (example: `FAC01`) |
-| `FacilityName` | `VARCHAR(100)` | `NOT NULL` | Commercial facility name (example: *Bhadla Solar Park*) |
-| `FacilityType` | `ENUM` | `NOT NULL` | Plant classification: `Solar Farm`, `Wind Farm`, `Hydroelectric Station`, `Battery Storage` |
-| `Region` | `VARCHAR(50)` | `NOT NULL` | Geographic province or administrative state |
-| `TotalCapacityMW` | `DECIMAL(10,2)` | `NOT NULL` | Nameplate aggregate generation or storage capacity in Megawatts |
-| `CommissionDate` | `DATE` | `NOT NULL` | Commercial Operation Date (COD) of grid synchronization |
-| `Latitude` | `DECIMAL(8,4)` | `NULLABLE` | Geospatial latitude coordinate (WGS84) |
-| `Longitude` | `DECIMAL(8,4)` | `NULLABLE` | Geospatial longitude coordinate (WGS84) |
+#### `TEAM_STAFF`
+Coaching, strategic analysis, and management personnel supporting team rosters.
+* **Oracle Types**: `StaffID VARCHAR2(10) PK`, `TeamID VARCHAR2(10) FK -> TEAM(TeamID)`, `StaffName VARCHAR2(100) NOT NULL`, `StaffRole VARCHAR2(50) [Coach|Analyst|Manager]`, `ContactNo VARCHAR2(30)`
+* **PostgreSQL Types**: `staff_id VARCHAR(10) PRIMARY KEY`, `team_id VARCHAR(10) REFERENCES team(team_id)`, `staff_name VARCHAR(100) NOT NULL`, `staff_role VARCHAR(50)`, `contact_no VARCHAR(30)`
 
-#### `GENERATION_UNIT`
-Individual generation assets (photovoltaic inverter blocks, wind turbine generators, hydro Francis or Kaplan units, BESS container racks).
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `UnitID` | `VARCHAR(10)` | **PRIMARY KEY** | Unique generation asset identifier (example: `U101`) |
-| `FacilityID` | `VARCHAR(10)` | **FOREIGN KEY** to `POWER_FACILITY(FacilityID)` | Parent power facility |
-| `UnitType` | `VARCHAR(50)` | `NOT NULL` | Equipment specification (example: `Vestas V126 Wind Turbine`) |
-| `RatedCapacityKW`| `DECIMAL(10,2)` | `NOT NULL` | Unit rated peak electrical capacity in Kilowatts |
-| `OperationalStatus`| `ENUM` | `DEFAULT 'Operational'` | Status: `Operational`, `Maintenance`, `Offline`, `Decommissioned` |
-| `CommissionDate` | `DATE` | `NOT NULL` | Interconnection and commissioning date |
-
-#### `MAINTENANCE_ENGINEER`
-Certified field engineers, asset technicians, and maintenance leads.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `EngineerID` | `VARCHAR(10)` | **PRIMARY KEY** | Unique engineering personnel identifier (example: `ENG01`) |
-| `FirstName` | `VARCHAR(50)` | `NOT NULL` | Engineer legal first name |
-| `LastName` | `VARCHAR(50)` | `NOT NULL` | Engineer legal last name |
-| `Specialization` | `VARCHAR(50)` | `NOT NULL` | Domain focus (example: `Solar Inverters & High Voltage`) |
-| `CertificationLevel`| `VARCHAR(40)`| `NOT NULL` | Professional engineering certification |
-
-#### `EQUIPMENT_MAINTENANCE_LOG`
-Comprehensive service records, component replacements, downtime hours, and fiscal cost accounting.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `MaintenanceID` | `VARCHAR(10)` | **PRIMARY KEY** | Maintenance event record ID (example: `MNT01`) |
-| `UnitID` | `VARCHAR(10)` | **FOREIGN KEY** to `GENERATION_UNIT(UnitID)` | Unit serviced |
-| `EngineerID` | `VARCHAR(10)` | **FOREIGN KEY** to `MAINTENANCE_ENGINEER(EngineerID)` | Lead certifying engineer |
-| `MaintenanceDate`| `DATE` | `NOT NULL` | Date corrective or preventative action took place |
-| `ActionTaken` | `VARCHAR(255)`| `NOT NULL` | Detailed work description |
-| `DowntimeHours` | `DECIMAL(6,2)` | `NOT NULL` | Asset outage duration in hours |
-| `MaintenanceCost`| `DECIMAL(10,2)`| `NOT NULL` | Aggregate cost in currency units (parts and labor) |
-| `ComponentReplaced`| `VARCHAR(100)`| `NULLABLE` | Serialized replacement hardware part name |
+#### `EQUIPMENT`
+Certified tournament hardware and peripherals deployed on stage.
+* **Oracle Types**: `EquipmentID VARCHAR2(10) PK`, `EquipmentName VARCHAR2(100) NOT NULL`, `EquipmentType VARCHAR2(50)`, `Brand VARCHAR2(50)`
+* **PostgreSQL Types**: `equipment_id VARCHAR(10) PRIMARY KEY`, `equipment_name VARCHAR(100) NOT NULL`, `equipment_type VARCHAR(50)`, `brand VARCHAR(50)`
 
 ---
 
-### 2. Subsystem: Telemetry
+### Subsystem 2: Match Telemetry & In-Game Analytics
 
-#### `ENVIRONMENTAL_TELEMETRY`
-Ambient atmospheric and hydrological conditions logged at plant boundary weather stations.
+#### `MATCH`
+Official competitive fixtures played between teams.
+* **Oracle Types**: `MatchID VARCHAR2(10) PK`, `StageID VARCHAR2(10) FK -> TOURNAMENT_STAGE(StageID)`, `GameID VARCHAR2(10) FK -> GAME(GameID)`, `MatchDate DATE`, `MatchTime VARCHAR2(10)`, `MatchResult VARCHAR2(50)`, `MatchStatus VARCHAR2(50) [Scheduled|Live|Completed]`, `RefereeID VARCHAR2(10) FK -> REFEREE(RefereeID)`
+* **PostgreSQL Types**: `match_id VARCHAR(10) PRIMARY KEY`, `stage_id VARCHAR(10) REFERENCES tournament_stage(stage_id)`, `game_id VARCHAR(10) REFERENCES game(game_id)`, `match_date DATE`, `match_time VARCHAR(10)`, `match_result VARCHAR(50)`, `match_status VARCHAR(50)`, `referee_id VARCHAR(10) REFERENCES referee(referee_id)`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `EnvLogID` | `VARCHAR(10)` | **PRIMARY KEY** | Unique environmental telemetry record ID |
-| `FacilityID` | `VARCHAR(10)` | **FOREIGN KEY** to `POWER_FACILITY(FacilityID)` | Parent plant |
-| `LogTimestamp` | `TIMESTAMP` | `NOT NULL` | Exact UTC observation timestamp |
-| `SolarIrradiance`| `DECIMAL(8,2)` | `DEFAULT 0.00` | Global Horizontal Irradiance in W/m2 |
-| `WindSpeed` | `DECIMAL(6,2)` | `DEFAULT 0.00` | Anemometer wind speed in m/s |
-| `WaterFlowRate` | `DECIMAL(8,2)` | `DEFAULT 0.00` | Penstock water discharge velocity in m3/s |
-| `Temperature` | `DECIMAL(5,2)` | `NOT NULL` | Ambient temperature in degrees Celsius (°C) |
-| `HumidityPct` | `DECIMAL(5,2)` | `NULLABLE` | Relative atmospheric humidity percentage |
+#### `TEAM_MATCH_PARTICIPATION`
+Composite junction table tracking bilateral team engagement per match and round score.
+* **Oracle Types**: `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `TeamID VARCHAR2(10) FK -> TEAM(TeamID)`, `Result VARCHAR2(50) [Win|Loss|Pending]`, `TeamScore NUMBER(4)`, `PRIMARY KEY (MatchID, TeamID)`
+* **PostgreSQL Types**: `match_id VARCHAR(10) REFERENCES match(match_id)`, `team_id VARCHAR(10) REFERENCES team(team_id)`, `result VARCHAR(50)`, `team_score INTEGER`, `PRIMARY KEY (match_id, team_id)`
 
-#### `ENERGY_PRODUCTION_TIMESERIES`
-High-resolution generation records logged per unit for grid integration and power yield dispatch.
+#### `MATCH_MAP`
+Individual map instances within Best-of-3 and Best-of-5 competitive series fixtures.
+* **Oracle Types**: `MapID VARCHAR2(10) PK`, `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `MapName VARCHAR2(50) NOT NULL [Lotus|Sunset|Split|Ascent|Abyss]`, `MapOrder NUMBER(2) NOT NULL`, `WinnerTeamID VARCHAR2(10) FK -> TEAM(TeamID)`, `Team1Score NUMBER(3)`, `Team2Score NUMBER(3)`, `RoundsPlayed NUMBER(3)`
+* **PostgreSQL Types**: `map_id VARCHAR(10) PRIMARY KEY`, `match_id VARCHAR(10) REFERENCES match(match_id)`, `map_name VARCHAR(50) NOT NULL`, `map_order INTEGER NOT NULL`, `winner_team_id VARCHAR(10) REFERENCES team(team_id)`, `team1_score INTEGER`, `team2_score INTEGER`, `rounds_played INTEGER`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `ProductionID` | `VARCHAR(10)` | **PRIMARY KEY** | Time-series generation interval ID |
-| `UnitID` | `VARCHAR(10)` | **FOREIGN KEY** to `GENERATION_UNIT(UnitID)` | Specific generating unit |
-| `ProductionTimestamp`| `TIMESTAMP` | `NOT NULL` | Interval end timestamp |
-| `EnergyGeneratedKWh` | `DECIMAL(12,2)` | `NOT NULL` | Net electrical energy produced in Kilowatt-hours |
-| `GridFrequencyHz` | `DECIMAL(5,2)` | `DEFAULT 50.00` | Microgrid or interconnection line frequency in Hertz |
-| `CapacityFactorPct` | `DECIMAL(5,2)` | `NOT NULL` | Operational capacity factor percentage |
-
-#### `IOT_SENSOR_REGISTRY`
-Physical and logical sensor inventory deployed on turbines, inverters, and transformers.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `SensorID` | `VARCHAR(10)` | **PRIMARY KEY** | Hardware sensor serial index (example: `SEN01`) |
-| `UnitID` | `VARCHAR(10)` | **FOREIGN KEY** to `GENERATION_UNIT(UnitID)` | Unit monitored by sensor |
-| `SensorCategory`| `VARCHAR(50)` | `NOT NULL` | Transducer category (example: `Pyranometer`, `Anemometer`) |
-| `ModelNumber` | `VARCHAR(50)` | `NOT NULL` | OEM device catalog number |
-| `SamplingIntervalSec`| `INTEGER` | `DEFAULT 10` | Hardware polling period in seconds |
-| `Status` | `VARCHAR(20)` | `DEFAULT 'Active'` | Health status (`Active`, `Fault`, `Calibrating`) |
-
-#### `IOT_TELEMETRY_LOG`
-Streaming time-series payload log utilizing modern columnar complex types (`STRUCT` and array `VARCHAR[]`).
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `TelemetryID` | `VARCHAR(10)` | **PRIMARY KEY** | Telemetry frame ID |
-| `SensorID` | `VARCHAR(10)` | **FOREIGN KEY** to `IOT_SENSOR_REGISTRY(SensorID)` | Originating IoT device |
-| `ReadingTimestamp`| `TIMESTAMP` | `NOT NULL` | Sampling timestamp |
-| `MetricPayload` | `STRUCT` | `NOT NULL` | Object containing `{metric_name, reading_value, unit, calibration_offset}` |
-| `DiagnosticFlags` | `VARCHAR[]` | `NOT NULL` | Array of operational alarms or state flags (example: `['NORMAL', 'HIGH_SOLAR_FLUX']`) |
-| `BatterySoCPct` | `DECIMAL(5,2)` | `NULLABLE` | Auxiliary sensor battery level percentage |
+#### `PLAYER_PERFORMANCE`
+High-resolution athlete combat telemetry and hardware telemetry per map instance.
+* **Oracle Types**: `PerformanceID VARCHAR2(10) PK`, `PlayerID VARCHAR2(10) FK -> PLAYER(PlayerID)`, `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `MapID VARCHAR2(10) FK -> MATCH_MAP(MapID)`, `RoundsPlayed NUMBER(3) NOT NULL`, `DamageDealt NUMBER(6)`, `TotalCombatScore NUMBER(6)`, `ACS NUMBER(5,1)`, `ADR NUMBER(5,1)`, `Score NUMBER(6)`, `Kills NUMBER(4)`, `Assists NUMBER(4)`, `Deaths NUMBER(4)`, `FirstKills NUMBER(4)`, `FirstDeaths NUMBER(4)`, `ImpactIndex NUMBER(4,2)`, `EquipmentID VARCHAR2(10) FK -> EQUIPMENT(EquipmentID)`, `InternetLatencyMs NUMBER(5,1)`, `GameplayAnalytics VARCHAR2(255)`
+* **PostgreSQL Types**: `performance_id VARCHAR(10) PRIMARY KEY`, `player_id VARCHAR(10) REFERENCES player(player_id)`, `match_id VARCHAR(10) REFERENCES match(match_id)`, `map_id VARCHAR(10) REFERENCES match_map(map_id)`, `rounds_played INTEGER NOT NULL`, `damage_dealt INTEGER`, `total_combat_score INTEGER`, `acs NUMERIC(5,1)`, `adr NUMERIC(5,1)`, `score INTEGER`, `kills INTEGER`, `assists INTEGER`, `deaths INTEGER`, `first_kills INTEGER`, `first_deaths INTEGER`, `impact_index NUMERIC(4,2)`, `equipment_id VARCHAR(10) REFERENCES equipment(equipment_id)`, `internet_latency_ms NUMERIC(5,1)`, `gameplay_analytics VARCHAR(255)`
 
 ---
 
-### 3. Subsystem: Storage
+### Subsystem 3: Finance, Sponsorship & Results
 
-#### `BATTERY_STORAGE_TELEMETRY`
-Real-time battery energy storage telemetry measuring thermodynamic, electrochemical, and power states.
+#### `SPONSOR`
+Corporate brands and technology partners backing events.
+* **Oracle Types**: `SponsorID VARCHAR2(10) PK`, `SponsorName VARCHAR2(100) NOT NULL`, `ContactNo VARCHAR2(30)`, `Email VARCHAR2(100)`, `SponsorType VARCHAR2(50)`
+* **PostgreSQL Types**: `sponsor_id VARCHAR(10) PRIMARY KEY`, `sponsor_name VARCHAR(100) NOT NULL`, `contact_no VARCHAR(30)`, `email VARCHAR(100)`, `sponsor_type VARCHAR(50)`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `BESSLogID` | `VARCHAR(10)` | **PRIMARY KEY** | Storage log unique ID (example: `BESS01`) |
-| `FacilityID` | `VARCHAR(10)` | **FOREIGN KEY** to `POWER_FACILITY(FacilityID)` | Storage substation facility |
-| `LogTimestamp` | `TIMESTAMP` | `NOT NULL` | Observation timestamp |
-| `StateOfChargePct` | `DECIMAL(5,2)` | `NOT NULL` | Instantaneous battery State of Charge (0.00% to 100.00%) |
-| `CellTemperatureC` | `DECIMAL(5,2)` | `NOT NULL` | Average battery core cell temperature (°C) |
-| `ChargeDischargeRateKW` | `DECIMAL(10,2)` | `NOT NULL` | Net power flow: negative for discharge, positive for charge |
-| `CycleCount` | `INTEGER` | `NOT NULL` | Cumulative equivalent full charge or discharge cycles |
+#### `TOURNAMENT_SPONSOR`
+Composite junction establishing financial contributions committed by sponsors per event.
+* **Oracle Types**: `TournamentID VARCHAR2(10) FK -> TOURNAMENT(TournamentID)`, `SponsorID VARCHAR2(10) FK -> SPONSOR(SponsorID)`, `SponsorshipAmount NUMBER(12,2)`, `PRIMARY KEY (TournamentID, SponsorID)`
+* **PostgreSQL Types**: `tournament_id VARCHAR(10) REFERENCES tournament(tournament_id)`, `sponsor_id VARCHAR(10) REFERENCES sponsor(sponsor_id)`, `sponsorship_amount NUMERIC(12,2)`, `PRIMARY KEY (tournament_id, sponsor_id)`
 
----
+#### `PRIZE_POOL`
+Prize distribution reserve and pool metadata per tournament.
+* **Oracle Types**: `PrizePoolID VARCHAR2(10) PK`, `TournamentID VARCHAR2(10) FK -> TOURNAMENT(TournamentID)`, `TotalAmount NUMBER(12,2)`, `Currency VARCHAR2(10)`, `DistributionDate DATE`
+* **PostgreSQL Types**: `prize_pool_id VARCHAR(10) PRIMARY KEY`, `tournament_id VARCHAR(10) REFERENCES tournament(tournament_id)`, `total_amount NUMERIC(12,2)`, `currency VARCHAR(10)`, `distribution_date DATE`
 
-### 4. Subsystem: Grid and Offtake
+#### `FINANCIAL_RECORD`
+Fiscal ledger tracking event cash inflows, venue expenditures, and payouts.
+* **Oracle Types**: `RecordID VARCHAR2(10) PK`, `TournamentID VARCHAR2(10) FK -> TOURNAMENT(TournamentID)`, `RecordType VARCHAR2(50) [Revenue|Expense|Prize Payout]`, `Amount NUMBER(12,2)`, `TransactionDate DATE`
+* **PostgreSQL Types**: `record_id VARCHAR(10) PRIMARY KEY`, `tournament_id VARCHAR(10) REFERENCES tournament(tournament_id)`, `record_type VARCHAR(50)`, `amount NUMERIC(12,2)`, `transaction_date DATE`
 
-#### `DISTRIBUTION_COMPANY`
-Power Distribution Companies (DISCOMs) and off-takers purchasing wholesale renewable energy.
+#### `AWARD`
+Accolades granted to standout competitors or organizations (MVP, Fair Play).
+* **Oracle Types**: `AwardID VARCHAR2(10) PK`, `TournamentID VARCHAR2(10) FK -> TOURNAMENT(TournamentID)`, `PlayerID VARCHAR2(10) FK -> PLAYER(PlayerID) NULL`, `TeamID VARCHAR2(10) FK -> TEAM(TeamID) NULL`, `AwardName VARCHAR2(100) NOT NULL`, `AwardType VARCHAR2(50)`, `AwardDate DATE`
+* **PostgreSQL Types**: `award_id VARCHAR(10) PRIMARY KEY`, `tournament_id VARCHAR(10) REFERENCES tournament(tournament_id)`, `player_id VARCHAR(10) REFERENCES player(player_id)`, `team_id VARCHAR(10) REFERENCES team(team_id)`, `award_name VARCHAR(100) NOT NULL`, `award_type VARCHAR(50)`, `award_date DATE`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `CompanyID` | `VARCHAR(10)` | **PRIMARY KEY** | DISCOM corporate ID (example: `DIS01`) |
-| `CompanyName` | `VARCHAR(100)` | `NOT NULL` | Utility entity name |
-| `LicenseNumber` | `VARCHAR(50)` | `NOT NULL` | Power transmission and distribution regulatory license |
-| `ContactEmail` | `VARCHAR(100)` | `NOT NULL` | Commercial dispatch contact email |
-| `GridRegion` | `VARCHAR(50)` | `NOT NULL` | Regional synchronization grid zone (example: `Northern Grid`) |
-
-#### `SUPPLY_AGREEMENT`
-Long-term Power Purchase Agreements (PPAs) establishing tariff guarantees and contracted capacities.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `AgreementID` | `VARCHAR(10)` | **PRIMARY KEY** | PPA contractual contract code |
-| `FacilityID` | `VARCHAR(10)` | **FOREIGN KEY** to `POWER_FACILITY(FacilityID)` | Power generating facility |
-| `CompanyID` | `VARCHAR(10)` | **FOREIGN KEY** to `DISTRIBUTION_COMPANY(CompanyID)` | Purchasing DISCOM utility |
-| `StartDate` | `DATE` | `NOT NULL` | Contract commencement date |
-| `EndDate` | `DATE` | `NOT NULL` | Contract expiration date |
-| `ContractedCapacityMW`| `DECIMAL(8,2)`| `NOT NULL` | Contracted off-take capacity in Megawatts |
-| `TariffPerKWh` | `DECIMAL(6,4)` | `NOT NULL` | Feed-in tariff price in USD/kWh (example: `$0.0425`) |
-| `AgreementStatus` | `VARCHAR(20)` | `DEFAULT 'Active'`| Status (`Active`, `Expired`, `Terminated`) |
-
-#### `ELECTRICITY_DISTRIBUTION`
-Periodic dispatch records capturing delivered energy and line transmission impedance losses.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `DistributionID` | `VARCHAR(10)` | **PRIMARY KEY** | Settlement dispatch batch ID |
-| `AgreementID` | `VARCHAR(10)` | **FOREIGN KEY** to `SUPPLY_AGREEMENT(AgreementID)` | Offtake agreement reference |
-| `DispatchTimestamp`| `TIMESTAMP` | `NOT NULL` | Dispatch settlement timestamp |
-| `EnergySuppliedMWh`| `DECIMAL(10,2)`| `NOT NULL` | Net energy transferred across boundary meter in MWh |
-| `TransmissionLossPct`| `DECIMAL(5,2)`| `DEFAULT 2.10` | High-voltage transmission loss percentage |
+#### `TOURNAMENT_RANKING`
+Final competitive placements and prize payouts achieved by teams.
+* **Oracle Types**: `TournamentID VARCHAR2(10) FK -> TOURNAMENT(TournamentID)`, `TeamID VARCHAR2(10) FK -> TEAM(TeamID)`, `FinalRank NUMBER(4)`, `PrizeAmount NUMBER(12,2)`, `PRIMARY KEY (TournamentID, TeamID)`
+* **PostgreSQL Types**: `tournament_id VARCHAR(10) REFERENCES tournament(tournament_id)`, `team_id VARCHAR(10) REFERENCES team(team_id)`, `final_rank INTEGER`, `prize_amount NUMERIC(12,2)`, `PRIMARY KEY (tournament_id, team_id)`
 
 ---
 
-### 5. Subsystem: Compliance and ESG
+### Subsystem 4: Broadcast & Audience Engagement
 
-#### `REGULATORY_AGENCY`
-Statutory environmental and energy boards enforcing grid reliability, safety codes, and carbon accounting.
+#### `STREAMING_PLATFORM`
+Broadcast networks and digital OTT channels distributing match feeds.
+* **Oracle Types**: `PlatformID VARCHAR2(10) PK`, `PlatformName VARCHAR2(100) NOT NULL`, `PlatformType VARCHAR2(50)`, `ContactInfo VARCHAR2(100)`
+* **PostgreSQL Types**: `platform_id VARCHAR(10) PRIMARY KEY`, `platform_name VARCHAR(100) NOT NULL`, `platform_type VARCHAR(50)`, `contact_info VARCHAR(100)`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `AgencyID` | `VARCHAR(10)` | **PRIMARY KEY** | Agency code (example: `REG01`) |
-| `AgencyName` | `VARCHAR(100)` | `NOT NULL` | Official regulatory commission name |
-| `Jurisdiction` | `VARCHAR(50)` | `NOT NULL` | Administrative authority tier (`National`, `Regional`) |
+#### `MATCH_STREAM`
+Live stream channel telemetry and peak concurrent viewership count.
+* **Oracle Types**: `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `PlatformID VARCHAR2(10) FK -> STREAMING_PLATFORM(PlatformID)`, `PeakViewers NUMBER(9)`, `PRIMARY KEY (MatchID, PlatformID)`
+* **PostgreSQL Types**: `match_id VARCHAR(10) REFERENCES match(match_id)`, `platform_id VARCHAR(10) REFERENCES streaming_platform(platform_id)`, `peak_viewers INTEGER`, `PRIMARY KEY (match_id, platform_id)`
 
-#### `COMPLIANCE_INSPECTION`
-Safety compliance audits, environmental impact reports, and equipment certification scorecards.
+#### `AUDIENCE`
+Registered community members and spectators participating in fan engagement.
+* **Oracle Types**: `AudienceID VARCHAR2(10) PK`, `AudienceName VARCHAR2(100) NOT NULL`, `Email VARCHAR2(100) NOT NULL`, `ContactNo VARCHAR2(30)`
+* **PostgreSQL Types**: `audience_id VARCHAR(10) PRIMARY KEY`, `audience_name VARCHAR(100) NOT NULL`, `email VARCHAR(100) NOT NULL`, `contact_no VARCHAR(30)`
 
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `InspectionID` | `VARCHAR(10)` | **PRIMARY KEY** | Audit report ID (example: `INS01`) |
-| `FacilityID` | `VARCHAR(10)` | **FOREIGN KEY** to `POWER_FACILITY(FacilityID)` | Facility audited |
-| `AgencyID` | `VARCHAR(10)` | **FOREIGN KEY** to `REGULATORY_AGENCY(AgencyID)` | Certifying oversight agency |
-| `InspectionDate` | `DATE` | `NOT NULL` | Date audit was conducted |
-| `ComplianceStatus`| `VARCHAR(30)` | `NOT NULL` | Assessment (`Compliant`, `Conditional`, `Non-Compliant`) |
-| `AuditScore` | `DECIMAL(5,2)` | `NOT NULL` | Standardized audit percentage rating (0.0 to 100.0) |
-| `Notes` | `VARCHAR(255)` | `NOT NULL` | Technical findings and compliance remarks |
-
-#### `CARBON_CREDIT_LEDGER`
-Certified Emission Reductions (CER) ledger tracking accredited carbon offsets, standard verification, and dollar valuation.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `CreditID` | `VARCHAR(10)` | **PRIMARY KEY** | Carbon certificate ledger ID |
-| `FacilityID` | `VARCHAR(10)` | **FOREIGN KEY** to `POWER_FACILITY(FacilityID)` | Generating facility generating abatement |
-| `IssuanceDate` | `DATE` | `NOT NULL` | Date credits were issued |
-| `CreditsIssued` | `INTEGER` | `NOT NULL` | Total verified carbon credits issued |
-| `CO2OffsetTons` | `DECIMAL(10,2)` | `NOT NULL` | Metric tons of CO2 equivalent displaced |
-| `Standard` | `VARCHAR(50)` | `DEFAULT 'Gold Standard'`| Verification body (`Gold Standard`, `Verra VCS`, `CDM`) |
-| `MarketValueUSD` | `DECIMAL(12,2)` | `NOT NULL` | Assessed or transacted dollar market value in USD |
+#### `VOTE`
+Fan-driven ballots cast for Match MVP, Best Team, or Match of the Day.
+* **Oracle Types**: `VoteID VARCHAR2(10) PK`, `AudienceID VARCHAR2(10) FK -> AUDIENCE(AudienceID)`, `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `VoteType VARCHAR2(50) [Best Player|Best Team|Match of the Day]`, `VoteDate DATE`
+* **PostgreSQL Types**: `vote_id VARCHAR(10) PRIMARY KEY`, `audience_id VARCHAR(10) REFERENCES audience(audience_id)`, `match_id VARCHAR(10) REFERENCES match(match_id)`, `vote_type VARCHAR(50)`, `vote_date DATE`
 
 ---
 
-## Target Database Engine Compatibility
+### Subsystem 5: Integrity, Officiating & Discipline
 
-The schema is formulated to be fully exportable and natively supported across modern relational, time-series, and analytical database management engines:
+#### `ADMINISTRATOR`
+Executive tournament directors and league officials.
+* **Oracle Types**: `AdminID VARCHAR2(10) PK`, `AdminName VARCHAR2(100) NOT NULL`, `ContactNo VARCHAR2(30)`, `Email VARCHAR2(100) UNIQUE NOT NULL`
+* **PostgreSQL Types**: `admin_id VARCHAR(10) PRIMARY KEY`, `admin_name VARCHAR(100) NOT NULL`, `contact_no VARCHAR(30)`, `email VARCHAR(100) UNIQUE NOT NULL`
 
-1. **PostgreSQL 14+ and TimescaleDB**:
-   - `ENERGY_PRODUCTION_TIMESERIES` and `ENVIRONMENTAL_TELEMETRY` convert directly into **TimescaleDB Hypertables** (`create_hypertable`).
-   - `MetricPayload` maps to PostgreSQL `JSONB` or composite `TYPE`.
-   - `DiagnosticFlags` maps natively to PostgreSQL `TEXT[]` arrays.
-2. **DuckDB**:
-   - Out-of-the-box support for `STRUCT` and `LIST` nested types.
-   - Vectorized columnar queries (`ASOF JOIN`, `PIVOT`, `time_bucket`) run at native C++ execution speeds.
-3. **ClickHouse**:
-   - Ideal target for millions of streaming sensor rows with `MergeTree` and `TimeSeriesEngine`.
-4. **ANSI SQL:2016 Compliant**:
-   - All DDL definitions, primary keys, and foreign keys adhere to standard SQL constraints.
+#### `REFEREE`
+Certified head and assistant referees presiding over matches.
+* **Oracle Types**: `RefereeID VARCHAR2(10) PK`, `RefereeName VARCHAR2(100) NOT NULL`, `ContactNo VARCHAR2(30)`, `ExperienceYears NUMBER(3)`
+* **PostgreSQL Types**: `referee_id VARCHAR(10) PRIMARY KEY`, `referee_name VARCHAR(100) NOT NULL`, `contact_no VARCHAR(30)`, `experience_years INTEGER`
+
+#### `ANTI_CHEAT`
+Integrity telemetry tracking cheat detection engine audits and anomalous gameplay alerts.
+* **Oracle Types**: `AntiCheatID VARCHAR2(10) PK`, `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `PlayerID VARCHAR2(10) FK -> PLAYER(PlayerID)`, `CheatStatus VARCHAR2(50) [Clean|Flagged|Under Review]`, `MonitoringDetails VARCHAR2(255)`
+* **PostgreSQL Types**: `anti_cheat_id VARCHAR(10) PRIMARY KEY`, `match_id VARCHAR(10) REFERENCES match(match_id)`, `player_id VARCHAR(10) REFERENCES player(player_id)`, `cheat_status VARCHAR(50)`, `monitoring_details VARCHAR(255)`
+
+#### `DISCIPLINARY_ACTION`
+Official penalties, warnings, fines, and bans issued against players or organizations.
+* **Oracle Types**: `ActionID VARCHAR2(10) PK`, `PlayerID VARCHAR2(10) FK -> PLAYER(PlayerID) NULL`, `TeamID VARCHAR2(10) FK -> TEAM(TeamID) NULL`, `MatchID VARCHAR2(10) FK -> MATCH(MatchID)`, `ActionType VARCHAR2(50) [Warning|Fine|Disqualification|Match Ban]`, `Penalty VARCHAR2(255)`, `ActionDate DATE`
+* **PostgreSQL Types**: `action_id VARCHAR(10) PRIMARY KEY`, `player_id VARCHAR(10) REFERENCES player(player_id)`, `team_id VARCHAR(10) REFERENCES team(team_id)`, `match_id VARCHAR(10) REFERENCES match(match_id)`, `action_type VARCHAR(50)`, `penalty VARCHAR(255)`, `action_date DATE`
+
+---
+
+## 3. Relational Normalization Analysis
+
+### First Normal Form (1NF)
+* All attributes contain strictly atomic, scalar values.
+* Multi-valued attributes (such as multiple players per team, multiple staff roles, or participating match teams) are factored out into dedicated child or associative tables (`PLAYER`, `TEAM_STAFF`, `TEAM_MATCH_PARTICIPATION`).
+* Every relation has a clearly defined primary key (single attribute surrogate or composite natural key).
+
+### Second Normal Form (2NF)
+* The schema is in 1NF and contains zero partial functional dependencies.
+* For tables with composite primary keys (`TEAM_MATCH_PARTICIPATION`, `TOURNAMENT_SPONSOR`, `MATCH_STREAM`, `TOURNAMENT_RANKING`):
+  * In `TEAM_MATCH_PARTICIPATION`, `Result` and `TeamScore` depend entirely on the composite candidate key `(MatchID, TeamID)`, not solely on `MatchID` or `TeamID`.
+  * In `TOURNAMENT_SPONSOR`, `SponsorshipAmount` depends strictly on the pair `(TournamentID, SponsorID)`.
+  * In `MATCH_STREAM`, `PeakViewers` represents concurrent reach specifically for a match broadcast on a chosen platform, depending fully on `(MatchID, PlatformID)`.
+
+### Third Normal Form (3NF)
+* The schema satisfies 2NF and contains no transitive functional dependencies ($X \to Y$ and $Y \to Z$ where $Z$ is a non-prime attribute).
+* Non-key columns depend only on the primary key:
+  * Team country and ranking reside in `TEAM`; player records store only `TeamID` rather than duplicating team attributes.
+  * Tournament dates and admin info reside in `TOURNAMENT`; stages reference `TournamentID` without redundantly capturing tournament attributes.
+  * Disciplinary actions reference `MatchID`, `PlayerID`, or `TeamID`, preserving single-source truth for sanctions without duplicating player or team metadata.
+
+### Boyce-Codd Normal Form (BCNF)
+* For every non-trivial functional dependency $X \to Y$, $X$ is a superkey.
+* Candidate keys in associative entities (`MatchID + TeamID`, `TournamentID + SponsorID`) are minimal superkeys with no overlapping non-trivial determinants.

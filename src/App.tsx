@@ -1,174 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar, type ActiveTab } from './components/Navbar';
-import { DatabaseSchemaCanvas } from './components/DatabaseSchemaCanvas';
-import { TableManager } from './components/TableManager';
-import { DashboardOverview } from './components/DashboardOverview';
-import { QueryConsole } from './components/QueryConsole';
-import { RecordModal } from './components/RecordModal';
-import { INITIAL_TABLES, INITIAL_RELATIONS } from './data/databaseData';
-import { useIsMobile } from './hooks/useMediaQuery';
+import React, { useState, Suspense } from 'react';
+import { DatabaseProvider, useDatabase } from './store/databaseContext';
+import { ROUTES } from './constants/routes';
+import { SideRail } from './components/SideRail';
+import { TopStatusStrip } from './components/TopStatusStrip';
+import { CommandPalette } from './components/CommandPalette';
+import { CommandCenter } from './components/CommandCenter';
+import { BracketSchedule } from './components/BracketSchedule';
+import { DataVault } from './components/DataVault';
+import { SchemaMap } from './components/SchemaMap';
+import { QueryLab } from './components/QueryLab';
+import { PlSqlLab } from './components/PlSqlLab';
+import { IntegrityDesk } from './components/IntegrityDesk';
+import { ScoringAcademy } from './components/ScoringAcademy';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
-export const App: React.FC = () => {
-  const isMobile = useIsMobile(768);
-  const [activeTab, setActiveTab] = useState<ActiveTab>('schema');
-  const [selectedTableId, setSelectedTableId] = useState<string>(INITIAL_TABLES[0].id);
-
-  // Live in-memory table records state
-  const [tableData, setTableData] = useState<Record<string, any[]>>(() => {
-    const map: Record<string, any[]> = {};
-    INITIAL_TABLES.forEach((t) => {
-      map[t.id] = [...t.initialRows];
-    });
-    return map;
-  });
-
-  // Modal State
-  const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
-  const [modalTableId, setModalTableId] = useState<string>(INITIAL_TABLES[0].id);
-
-  // Live IoT Simulation State
-  const [isLiveSimulating, setIsLiveSimulating] = useState(false);
-
-  // Simulate streaming IoT telemetry ticks
-  useEffect(() => {
-    if (!isLiveSimulating) return;
-
-    const interval = setInterval(() => {
-      setTableData((prev) => {
-        const copy = { ...prev };
-
-        // 1. Append a simulated production reading
-        const existingProd = copy['ENERGY_PRODUCTION_TIMESERIES'] || [];
-        const nextId = `PRD${String(existingProd.length + 1).padStart(2, '0')}`;
-        const randomKwh = Math.round((420 + Math.random() * 85) * 100) / 100;
-        const newProd = {
-          ProductionID: nextId,
-          UnitID: 'U101',
-          ProductionTimestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          EnergyGeneratedKWh: randomKwh,
-          GridFrequencyHz: Math.round((49.95 + Math.random() * 0.1) * 100) / 100,
-          CapacityFactorPct: Math.round((randomKwh / 500) * 10000) / 100
-        };
-
-        // 2. Append simulated weather reading
-        const existingEnv = copy['ENVIRONMENTAL_TELEMETRY'] || [];
-        const nextEnvId = `ENV${String(existingEnv.length + 1).padStart(2, '0')}`;
-        const newEnv = {
-          EnvLogID: nextEnvId,
-          FacilityID: 'FAC01',
-          LogTimestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          SolarIrradiance: Math.round((920 + Math.random() * 120) * 100) / 100,
-          WindSpeed: Math.round((2.5 + Math.random() * 2) * 100) / 100,
-          WaterFlowRate: 0.0,
-          Temperature: Math.round((34 + Math.random() * 3) * 100) / 100,
-          HumidityPct: Math.round((22 + Math.random() * 4) * 100) / 100
-        };
-
-        // 3. Update battery SoC fluctuation
-        const existingBess = [...(copy['BATTERY_STORAGE_TELEMETRY'] || [])];
-        if (existingBess.length > 0) {
-          const lastBess = { ...existingBess[existingBess.length - 1] };
-          lastBess.StateOfChargePct = Math.min(100, Math.max(10, Math.round((lastBess.StateOfChargePct + (Math.random() > 0.5 ? 0.3 : -0.3)) * 100) / 100));
-          existingBess[existingBess.length - 1] = lastBess;
-        }
-
-        copy['ENERGY_PRODUCTION_TIMESERIES'] = [...existingProd.slice(-24), newProd];
-        copy['ENVIRONMENTAL_TELEMETRY'] = [...existingEnv.slice(-24), newEnv];
-        copy['BATTERY_STORAGE_TELEMETRY'] = existingBess;
-
-        return copy;
-      });
-    }, 2800);
-
-    return () => clearInterval(interval);
-  }, [isLiveSimulating]);
-
-  // Insert Row Handler
-  const handleInsertRow = (tableId: string, newRow: Record<string, any>) => {
-    setTableData((prev) => ({
-      ...prev,
-      [tableId]: [newRow, ...(prev[tableId] || [])]
-    }));
-  };
-
-  // Delete Row Handler
-  const handleDeleteRow = (tableId: string, primaryKeyValue: string) => {
-    const table = INITIAL_TABLES.find((t) => t.id === tableId);
-    if (!table) return;
-    const pkCol = table.columns.find((c) => c.isPrimaryKey)?.name || table.columns[0].name;
-
-    setTableData((prev) => ({
-      ...prev,
-      [tableId]: (prev[tableId] || []).filter((row) => String(row[pkCol]) !== String(primaryKeyValue))
-    }));
-  };
-
-  // Switch to table in management view
-  const handleSelectTableForManagement = (tableId: string) => {
-    setSelectedTableId(tableId);
-    setActiveTab('manager');
-  };
-
-  // Trigger Insert Modal
-  const handleOpenInsertModal = (tableId: string) => {
-    setModalTableId(tableId);
-    setIsInsertModalOpen(true);
-  };
-
-  const modalTable = INITIAL_TABLES.find((t) => t.id === modalTableId) || INITIAL_TABLES[0];
+const AppContent: React.FC = () => {
+  const { activeTab } = useDatabase();
+  const [railCollapsed, setRailCollapsed] = useState(false);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-app)' }}>
-      {/* Top Header Navigation */}
-      <Navbar
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        tableCount={INITIAL_TABLES.length}
+    <div className="arenadb-shell flex h-screen w-full overflow-hidden bg-token text-token select-none">
+      {/* Collapsible Left Rail / Mobile Bottom Sheet */}
+      <SideRail
+        collapsed={railCollapsed}
+        onToggleCollapse={() => setRailCollapsed((prev) => !prev)}
       />
 
-      {/* Main Tab Content */}
-      <main style={{ flex: 1, position: 'relative', paddingBottom: isMobile ? 56 : 0 }}>
-        {activeTab === 'schema' && (
-          <DatabaseSchemaCanvas
-            tables={INITIAL_TABLES}
-            relations={INITIAL_RELATIONS}
-            onSelectTableForManagement={handleSelectTableForManagement}
-          />
-        )}
+      {/* Main Body */}
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        {/* Persistent Top Strip with Marquee & Controls */}
+        <TopStatusStrip />
 
-        {activeTab === 'manager' && (
-          <TableManager
-            tables={INITIAL_TABLES}
-            selectedTableId={selectedTableId}
-            onSelectTable={setSelectedTableId}
-            tableData={tableData}
-            onOpenInsertModal={handleOpenInsertModal}
-            onDeleteRow={handleDeleteRow}
-          />
-        )}
+        {/* Dynamic Viewport Container */}
+        <main className="arenadb-main flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar pb-24 md:pb-8">
+          {activeTab === ROUTES.command_center && <CommandCenter />}
+          {activeTab === ROUTES.bracket && <BracketSchedule />}
+          {activeTab === ROUTES.academy && (
+            <ErrorBoundary sectionName="Scoring Academy">
+              <Suspense fallback={<div className="p-8 text-center font-mono text-xs text-primary-token animate-pulse">Loading Scoring Academy...</div>}>
+                <ScoringAcademy />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+          {activeTab === ROUTES.vault && <DataVault />}
+          {activeTab === ROUTES.schema && <SchemaMap />}
+          {activeTab === ROUTES.query && <QueryLab />}
+          {activeTab === ROUTES.plsql && <PlSqlLab />}
+          {activeTab === ROUTES.integrity && <IntegrityDesk />}
+        </main>
+      </div>
 
-        {activeTab === 'dashboard' && (
-          <DashboardOverview
-            tables={INITIAL_TABLES}
-            tableData={tableData}
-            isLiveSimulating={isLiveSimulating}
-            onToggleLiveSimulation={() => setIsLiveSimulating(!isLiveSimulating)}
-            onSelectTable={handleSelectTableForManagement}
-          />
-        )}
-
-        {activeTab === 'queries' && <QueryConsole />}
-      </main>
-
-      {/* Insertion Modal */}
-      <RecordModal
-        isOpen={isInsertModalOpen}
-        onClose={() => setIsInsertModalOpen(false)}
-        table={modalTable}
-        allTablesData={tableData}
-        onInsertRow={handleInsertRow}
-      />
+      {/* Global Command Palette (Ctrl+K) */}
+      <CommandPalette />
     </div>
   );
 };
+
+export const App: React.FC = () => {
+  return (
+    <DatabaseProvider>
+      <AppContent />
+    </DatabaseProvider>
+  );
+};
+
 export default App;

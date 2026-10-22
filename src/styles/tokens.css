@@ -1,0 +1,417 @@
+/* ==========================================================================
+   ArenaDB Design System Tokens (src/styles/tokens.css)
+   Single Source of Truth for "Broadcast" (Light) and "Arena" (Dark) Themes
+   ========================================================================== */
+
+:root,
+:root[data-theme="light"] {
+  /* Broadcast (Light) */
+  --bg: #EDF1F5;
+  --surface: #FFFFFF;
+  --surface-2: #F5F8FB;
+  --surface-3: #E8EEF4;
+  --border: #CBD5E0;
+  --border-strong: #8FA1B3;
+
+  --text: #0F1B2A;
+  --text-muted: #44566A;
+  --text-faint: #5E6F82;
+  --text-on-primary: #FFFFFF;
+
+  --primary: #0A7E8C;
+  --primary-hover: #086874;
+  --primary-soft: #D6EEF1;
+
+  --secondary: #5B3FE0;
+  --secondary-soft: #E7E2FC;
+
+  --accent: #B45309;
+  --accent-soft: #FCEBD3;
+
+  --success: #15803D;
+  --success-soft: #D9F2E2;
+
+  --warning: #B45309;
+  --warning-soft: #FCEBD3;
+
+  --danger: #C62828;
+  --danger-soft: #FAE0E0;
+
+  --info: #1D4ED8;
+  --info-soft: #DCE6FB;
+
+  --live: #D92D20;
+  --focus-ring: #5B3FE0;
+
+  --chart-1: #0A7E8C;
+  --chart-2: #C47A00;
+  --chart-3: #5B3FE0;
+  --chart-4: #C2386B;
+  --chart-5: #1D4ED8;
+  --chart-6: #15803D;
+
+  --grid-line: #D5DDE6;
+  --shadow: 0 1px 2px rgba(15, 27, 42, 0.08), 0 4px 12px rgba(15, 27, 42, 0.06);
+
+  /* Sidebar Specific Tokens: Broadcast (Light) - Deep Navy Identity */
+  --sb-bg: linear-gradient(180deg, #0B2233 0%, #0E2D45 55%, #0A2A3C 100%);
+  --sb-border: rgba(255, 255, 255, 0.08);
+  --sb-text: #D3DFEA;
+  --sb-text-muted: #94AABD;
+  --sb-hover: rgba(255, 255, 255, 0.07);
+  --sb-active-bg: #22D3EE;
+  --sb-active-text: #04222A;
+  --sb-active-bar: #FFFFFF;
+  --sb-badge-bg: rgba(255, 255, 255, 0.10);
+  --sb-badge-text: #E8F0F6;
+  --sb-badge-live-bg: rgba(255, 92, 77, 0.18);
+  --sb-badge-live-text: #FFB4AB;
+  --sb-field-bg: rgba(255, 255, 255, 0.06);
+  --sb-field-border: rgba(255, 255, 255, 0.16);
+  --sb-divider: rgba(255, 255, 255, 0.10);
+  --sb-logo-bg: linear-gradient(135deg, #22D3EE, #5B8CFF);
+  --sb-shadow: 4px 0 24px rgba(8, 26, 40, 0.18);
+  --sb-badge-active-bg: rgba(4, 34, 42, 0.15);
+  --sb-scrim: rgba(5, 12, 20, 0.55);
+  --sb-sim-active-text: #34D399;
+  --sb-sim-active-bg: rgba(52, 211, 153, 0.12);
+  --sb-sim-active-border: rgba(52, 211, 153, 0.35);
+  --sb-sim-paused-text: #F87171;
+  --sb-sim-paused-bg: rgba(248, 113, 113, 0.12);
+  --sb-sim-paused-border: rgba(248, 113, 113, 0.35);
+  --sb-ring: rgba(34, 211, 238, 0.35);
+  --sb-logo-icon: #FFFFFF;
+
+  /* Code Syntax Highlighting (Light Theme) */
+  --syntax-keyword: #5B3FE0;
+  --syntax-string: #15803D;
+  --syntax-number: #B45309;
+  --syntax-comment: #5E6F82;
+  --syntax-function: #0A7E8C;
+
+  /* Backward-compatibility aliases for legacy styles */
+  --arena-bg-void: var(--bg);
+  --arena-bg-deck: var(--surface-3);
+  --arena-bg-surface: var(--surface-2);
+  --arena-bg-card: var(--surface);
+  --arena-bg-card-hover: var(--surface-2);
+  --arena-bg-card-active: var(--primary-soft);
+  --arena-bg-input: var(--surface);
+  --arena-bg-panel: var(--surface-2);
+
+  --arena-surface-base: var(--bg);
+  --arena-surface-card: var(--surface);
+  --arena-surface-elevated: var(--surface-2);
+
+  --arena-border: var(--border);
+  --arena-border-dim: var(--border);
+  --arena-border-subtle: var(--border);
+  --arena-border-neon: var(--border-strong);
+  --arena-border-bright: var(--border-strong);
+  --arena-border-amber: var(--warning);
+  --arena-border-magenta: var(--secondary);
+
+  --arena-neon-cyan: var(--primary);
+  --arena-neon-blue: var(--info);
+  --arena-neon-amber: var(--warning);
+  --arena-neon-emerald: var(--success);
+  --arena-neon-crimson: var(--danger);
+  --arena-neon-magenta: var(--secondary);
+
+  --arena-text-primary: var(--text);
+  --arena-text-bright: var(--text);
+  --arena-text-secondary: var(--text-muted);
+  --arena-text-muted: var(--text-muted);
+  --arena-text-dim: var(--text-faint);
+
+  --arena-shadow-sm: var(--shadow);
+  --arena-shadow-md: var(--shadow);
+  --arena-shadow-lg: 0 8px 24px rgba(15, 27, 42, 0.12);
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  /* Arena (Dark) */
+  --bg: #0A0F18;
+  --surface: #121A26;
+  --surface-2: #182233;
+  --surface-3: #1F2C40;
+  --border: #2A3A4F;
+  --border-strong: #4A6079;
+
+  --text: #E8EEF5;
+  --text-muted: #A3B3C4;
+  --text-faint: #8798AB;
+  --text-on-primary: #04222A;
+
+  --primary: #22D3EE;
+  --primary-hover: #67E3F5;
+  --primary-soft: #0F3A44;
+
+  --secondary: #A78BFA;
+  --secondary-soft: #2A2250;
+
+  --accent: #FBBF24;
+  --accent-soft: #3D2E0A;
+
+  --success: #34D399;
+  --success-soft: #0E3326;
+
+  --warning: #FBBF24;
+  --warning-soft: #3D2E0A;
+
+  --danger: #F87171;
+  --danger-soft: #451A1A;
+
+  --info: #60A5FA;
+  --info-soft: #14284A;
+
+  --live: #FF5C4D;
+  --focus-ring: #A78BFA;
+
+  --chart-1: #3CC7C9;
+  --chart-2: #F0A93A;
+  --chart-3: #9A86FF;
+  --chart-4: #F07BA3;
+  --chart-5: #60A5FA;
+  --chart-6: #34D399;
+
+  --grid-line: #263447;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.35);
+
+  /* Sidebar Specific Tokens: Arena (Dark) - Indigo-Tinted Panel */
+  --sb-bg: linear-gradient(180deg, #121A3A 0%, #0F1730 55%, #0C1226 100%);
+  --sb-border: #26315C;
+  --sb-text: #DCE4F2;
+  --sb-text-muted: #97A6C4;
+  --sb-hover: rgba(167, 139, 250, 0.12);
+  --sb-active-bg: #22D3EE;
+  --sb-active-text: #04222A;
+  --sb-active-bar: #A78BFA;
+  --sb-badge-bg: rgba(255, 255, 255, 0.08);
+  --sb-badge-text: #E6ECF8;
+  --sb-badge-live-bg: rgba(255, 92, 77, 0.20);
+  --sb-badge-live-text: #FFB4AB;
+  --sb-field-bg: rgba(255, 255, 255, 0.05);
+  --sb-field-border: #34417A;
+  --sb-divider: #26315C;
+  --sb-logo-bg: linear-gradient(135deg, #22D3EE, #A78BFA);
+  --sb-shadow: 4px 0 28px rgba(0, 0, 0, 0.45);
+  --sb-badge-active-bg: rgba(4, 34, 42, 0.15);
+  --sb-scrim: rgba(5, 12, 20, 0.55);
+  --sb-sim-active-text: #34D399;
+  --sb-sim-active-bg: rgba(52, 211, 153, 0.12);
+  --sb-sim-active-border: rgba(52, 211, 153, 0.35);
+  --sb-sim-paused-text: #F87171;
+  --sb-sim-paused-bg: rgba(248, 113, 113, 0.12);
+  --sb-sim-paused-border: rgba(248, 113, 113, 0.35);
+  --sb-ring: rgba(34, 211, 238, 0.35);
+  --sb-logo-icon: #FFFFFF;
+
+  /* Code Syntax Highlighting (Dark Theme) */
+  --syntax-keyword: #A78BFA;
+  --syntax-string: #34D399;
+  --syntax-number: #FBBF24;
+  --syntax-comment: #8798AB;
+  --syntax-function: #22D3EE;
+
+  /* Backward-compatibility aliases for legacy styles */
+  --arena-bg-void: var(--bg);
+  --arena-bg-deck: var(--surface-3);
+  --arena-bg-surface: var(--surface-2);
+  --arena-bg-card: var(--surface);
+  --arena-bg-card-hover: var(--surface-2);
+  --arena-bg-card-active: var(--primary-soft);
+  --arena-bg-input: var(--surface);
+  --arena-bg-panel: var(--surface-2);
+
+  --arena-surface-base: var(--bg);
+  --arena-surface-card: var(--surface);
+  --arena-surface-elevated: var(--surface-2);
+
+  --arena-border: var(--border);
+  --arena-border-dim: var(--border);
+  --arena-border-subtle: var(--border);
+  --arena-border-neon: var(--border-strong);
+  --arena-border-bright: var(--border-strong);
+  --arena-border-amber: var(--warning);
+  --arena-border-magenta: var(--secondary);
+
+  --arena-neon-cyan: var(--primary);
+  --arena-neon-blue: var(--info);
+  --arena-neon-amber: var(--warning);
+  --arena-neon-emerald: var(--success);
+  --arena-neon-crimson: var(--danger);
+  --arena-neon-magenta: var(--secondary);
+
+  --arena-text-primary: var(--text);
+  --arena-text-bright: var(--text);
+  --arena-text-secondary: var(--text-muted);
+  --arena-text-muted: var(--text-muted);
+  --arena-text-dim: var(--text-faint);
+
+  --arena-shadow-sm: var(--shadow);
+  --arena-shadow-md: var(--shadow);
+  --arena-shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Global Baseline Styling
+   ========================================================================== */
+
+::selection {
+  background-color: var(--primary-soft);
+  color: var(--text);
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-pulse,
+  .animate-ping,
+  .animate-marquee,
+  .animate-\[marquee_35s_linear_infinite\] {
+    animation: none !important;
+  }
+}
+
+/* Focus Visible Standard */
+:focus-visible {
+  outline: 3px solid var(--focus-ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessibility Rule: Minimum font-size 12px everywhere */
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\] {
+  font-size: 12px !important;
+}
+
+/* ==========================================================================
+   Semantic Token Utility Engine
+   ========================================================================== */
+
+/* Surfaces */
+.bg-bg { background-color: var(--bg) !important; }
+.bg-surface { background-color: var(--surface) !important; }
+.bg-surface-2 { background-color: var(--surface-2) !important; }
+.bg-surface-3 { background-color: var(--surface-3) !important; }
+
+/* Borders */
+.border-token { border-color: var(--border) !important; }
+.border-strong { border-color: var(--border-strong) !important; }
+
+/* Text */
+.text-token { color: var(--text) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-faint { color: var(--text-faint) !important; }
+.text-on-primary { color: var(--text-on-primary) !important; }
+
+/* Semantics: Solid & Soft */
+.bg-primary { background-color: var(--primary) !important; }
+.bg-primary-soft { background-color: var(--primary-soft) !important; }
+.text-primary-token { color: var(--primary) !important; }
+.border-primary-token { border-color: var(--primary) !important; }
+
+.bg-secondary { background-color: var(--secondary) !important; }
+.bg-secondary-soft { background-color: var(--secondary-soft) !important; }
+.text-secondary-token { color: var(--secondary) !important; }
+.border-secondary-token { border-color: var(--secondary) !important; }
+
+.bg-accent { background-color: var(--accent) !important; }
+.bg-accent-soft { background-color: var(--accent-soft) !important; }
+.text-accent-token { color: var(--accent) !important; }
+.border-accent-token { border-color: var(--accent) !important; }
+
+.bg-success { background-color: var(--success) !important; }
+.bg-success-soft { background-color: var(--success-soft) !important; }
+.text-success-token { color: var(--success) !important; }
+.border-success-token { border-color: var(--success) !important; }
+
+.bg-warning { background-color: var(--warning) !important; }
+.bg-warning-soft { background-color: var(--warning-soft) !important; }
+.text-warning-token { color: var(--warning) !important; }
+.border-warning-token { border-color: var(--warning) !important; }
+
+.bg-danger { background-color: var(--danger) !important; }
+.bg-danger-soft { background-color: var(--danger-soft) !important; }
+.text-danger-token { color: var(--danger) !important; }
+.border-danger-token { border-color: var(--danger) !important; }
+
+.bg-info { background-color: var(--info) !important; }
+.bg-info-soft { background-color: var(--info-soft) !important; }
+.text-info-token { color: var(--info) !important; }
+.border-info-token { border-color: var(--info) !important; }
+
+.bg-live { background-color: var(--live) !important; }
+.text-live-token { color: var(--live) !important; }
+
+/* Sidebar Utilities & Animation System */
+.sidebar-panel {
+  background: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), var(--sb-bg);
+  background-size: 16px 16px, 100% 100%;
+  border-right: 1px solid var(--sb-border);
+  box-shadow: var(--sb-shadow);
+}
+
+.sidebar-mobile-bar {
+  background: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), var(--sb-bg);
+  background-size: 16px 16px, 100% 100%;
+  border-top: 1px solid var(--sb-border);
+  box-shadow: var(--sb-shadow);
+}
+
+.sb-nav-item {
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.sb-nav-item:hover {
+  background-color: var(--sb-hover);
+  color: var(--sb-text);
+}
+
+.sb-nav-item:focus-visible,
+.sb-focus-visible:focus-visible {
+  outline: 2px solid var(--sb-active-bg) !important;
+  outline-offset: 2px !important;
+}
+
+.sb-search-field:focus-within {
+  border-color: var(--sb-active-bg) !important;
+  box-shadow: 0 0 0 3px var(--sb-ring) !important;
+}
+
+@keyframes sb-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+}
+
+.sb-pulse-dot {
+  animation: sb-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-nav-item {
+    transition: none !important;
+    transform: none !important;
+  }
+  .sb-pulse-dot {
+    animation: none !important;
+  }
+}

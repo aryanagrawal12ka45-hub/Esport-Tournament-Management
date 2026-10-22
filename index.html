@@ -4,7 +4,33 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Renewable Energy DB Simulator</title>
+    <meta
+      name="description"
+      content="ArenaDB: Global E-Sports Tournament Operations Database Lab powered by DuckDB-Wasm and Oracle 19c relational architecture."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>ArenaDB — Tournament Operations Database Lab</title>
+    <script>
+      (function () {
+        try {
+          var mode = localStorage.getItem('arenadb_theme_mode');
+          var resolved = 'dark';
+          if (mode === 'light' || mode === 'dark') {
+            resolved = mode;
+          } else if (mode === 'system' || !mode) {
+            resolved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', resolved);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
